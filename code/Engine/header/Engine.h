@@ -1,0 +1,25 @@
+#ifndef ENGINE_HH
+#define ENGINE_HH
+
+#include "EngineObject.h"
+#include "Screen.h"
+#include "../../utils.h"
+
+class Engine : public EngineObject {
+private:
+    sf::RenderWindow window;
+    sf::Clock clock;
+
+    Screen *current_screen;
+
+    void event_();
+    void update_();
+    void draw_();
+
+public:
+    Engine();
+    ~Engine();
+    void start();
+};
+
+#endif // ifndef ENGINE_HH
