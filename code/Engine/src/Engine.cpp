@@ -1,15 +1,17 @@
 #include "../header/Engine.h"
 
+int windowCoordx, windowCoordy;
+
 Engine::Engine() {}
 Engine::~Engine()
 {
-    delete current_screen;
+    delete currentScreen;
 }
 
 void Engine::start()
 {
     window.create(sf::VideoMode(W_WIDTH, W_HEIGHT), APP_NAME);
-    current_screen = new Screen();
+    currentScreen = new Screen();
 
     while (window.isOpen())
     {
@@ -24,6 +26,9 @@ void Engine::event_()
     sf::Event event;
     while (window.pollEvent(event))
     {
+        windowCoordx = window.getPosition().x + correctWindowCoordx;
+        windowCoordy = window.getPosition().y + correctWindowCoordy;
+
         switch (event.type)
         {
         case sf::Event::Closed:
@@ -37,23 +42,27 @@ void Engine::event_()
             }
             break;
 
+        case sf::Event::Resized:
+            window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+            break;
+
         default:
             break;
         }
-    }
 
-    if (current_screen != NULL)
-    {
-        current_screen->event(event);
+        if (currentScreen != NULL)
+        {
+            currentScreen->event(event);
+        }
     }
 }
 
 void Engine::update_()
 {
     sf::Time deltatime = clock.restart();
-    if (current_screen != NULL)
+    if (currentScreen != NULL)
     {
-        current_screen->update(deltatime);
+        currentScreen->update(deltatime);
     }
 }
 
@@ -63,9 +72,9 @@ void Engine::draw_()
 
     window.clear(sf::Color::Black);
 
-    if (current_screen != NULL)
+    if (currentScreen != NULL)
     {
-        window.draw(*current_screen);
+        window.draw(*currentScreen);
     }
 
     window.display();

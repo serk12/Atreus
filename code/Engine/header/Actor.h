@@ -7,11 +7,14 @@ class Actor : public EngineObject {
 protected:
     sf::Sprite sprite;
     sf::Texture texture;
+    bool drawable = false;
 
 public:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final
     {
-        target.draw(sprite);
+        if (drawable) {
+            target.draw(sprite);
+        }
     }
 };
 

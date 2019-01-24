@@ -2,13 +2,15 @@
 #ifndef SCREEN_HH
 #define SCREEN_HH
 
+#include <list>
+
 #include "EngineObject.h"
 #include "ControlledActor.h"
 #include "Scene.h"
 
 class Screen : public EngineObject {
 private:
-    ControlledActor controlledActor;
+    std::list<ControlledActor> actors;
     Scene scene;
 
 public:

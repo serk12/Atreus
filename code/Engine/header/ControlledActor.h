@@ -2,6 +2,8 @@
 #define CONTROLLEDACTOR_HH
 
 #include "Actor.h"
+#include "../../utils.h"
+#include "../../debug.h"
 
 class ControlledActor : public Actor {
 private:

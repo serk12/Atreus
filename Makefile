@@ -11,11 +11,11 @@ CXXFLAGS=-O3 -std=c++0x -Wall -Wextra
 LINKS=-lsfml-graphics -lsfml-window -lsfml-system
 CXX=g++
 
-.PHONY: all clean
-
+.PHONY: all
 all: $(FOLDERS) $(BUILD_DIR)/$(TARGET)
 	@echo $(TARGET) built
 
+.PHONY: clean
 clean:
 	rm build/*
 
