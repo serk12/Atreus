@@ -10,7 +10,8 @@
 
 class Screen : public EngineObject {
 private:
-    std::list<ControlledActor> actors;
+    std::list<Actor> actors;
+    ControlledActor controlled;
     Scene scene;
 
 public:
