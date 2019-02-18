@@ -8,6 +8,12 @@
 
 class Engine : public EngineObject {
 private:
+    static const float fps = 100;
+    static const df        = 1 / fps;
+    static const timeClamp = 0.2f;
+    float accumulator;
+
+
     sf::RenderWindow window;
     sf::Clock clock;
 

@@ -5,13 +5,11 @@
 #include <list>
 
 #include "EngineObject.h"
-#include "ControlledActor.h"
 #include "Scene.h"
 
 class Screen : public EngineObject {
 private:
-    std::list<Actor> actors;
-    ControlledActor controlled;
+    std::list<Asset> assets;
     Scene scene;
 
 public:

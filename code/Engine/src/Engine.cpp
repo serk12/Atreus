@@ -11,6 +11,7 @@ Engine::~Engine()
 void Engine::start()
 {
     window.create(sf::VideoMode(W_WIDTH, W_HEIGHT), APP_NAME);
+    accumulator   = 0;
     currentScreen = new Screen();
 
     while (window.isOpen())
@@ -59,11 +60,18 @@ void Engine::event_()
 
 void Engine::update_()
 {
-    sf::Time deltatime = clock.restart();
-    if (currentScreen != NULL)
-    {
-        currentScreen->update(deltatime);
+    accumulator += clock.restart();
+
+    if (accumulator > timeClamp) accumulator = timeClamp;
+    while (accumulator > Engine::dt) {
+        currentScreen->update(Engine::dt);
+        accumulator -= Engine::dt;
     }
+    /*
+       const float alpha = accumulator / dt;
+       // renderGame(alpha)
+        -> interpolate  transform = previous * alpha + current * (1.0 - alpha)
+     */
 }
 
 void Engine::draw_()
