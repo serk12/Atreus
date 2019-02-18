@@ -27,5 +27,5 @@ void Asset::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 const sf::IntRect& Asset::getIntRect() const
 {
-    return this.Sprite.getTextureRect();
+    return this->sprite.getTextureRect();
 }

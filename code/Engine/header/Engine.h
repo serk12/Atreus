@@ -8,9 +8,9 @@
 
 class Engine : public EngineObject {
 private:
-    static const float fps = 100;
-    static const df        = 1 / fps;
-    static const timeClamp = 0.2f;
+    static const float fps;
+    static const float dt;
+    static const float timeClamp;
     float accumulator;
 
 

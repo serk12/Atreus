@@ -11,7 +11,7 @@ public:
     ~Scene();
 
     void event(sf::Event event);
-    void update(sf::Time deltatime);
+    void update(const float deltatime);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
 

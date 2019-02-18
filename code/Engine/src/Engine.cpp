@@ -1,5 +1,9 @@
 #include "../header/Engine.h"
 
+const float Engine::fps       = 100;
+const float Engine::dt        = 1 / fps;
+const float Engine::timeClamp = 0.2f;
+
 int windowCoordx, windowCoordy;
 
 Engine::Engine() {}
@@ -60,7 +64,7 @@ void Engine::event_()
 
 void Engine::update_()
 {
-    accumulator += clock.restart();
+    accumulator += clock.restart().asSeconds();
 
     if (accumulator > timeClamp) accumulator = timeClamp;
     while (accumulator > Engine::dt) {

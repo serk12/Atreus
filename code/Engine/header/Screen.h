@@ -6,6 +6,7 @@
 
 #include "EngineObject.h"
 #include "Scene.h"
+#include "Asset.h"
 
 class Screen : public EngineObject {
 private:
@@ -17,7 +18,7 @@ public:
     ~Screen();
 
     void event(sf::Event event) final;
-    void update(sf::Time deltatime) final;
+    void update(const float deltatime) final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 
