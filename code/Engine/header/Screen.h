@@ -6,11 +6,12 @@
 
 #include "EngineObject.h"
 #include "Scene.h"
-#include "Asset.h"
+#include "../Assets/header/Shape.h"
+#include "../../debug.h"
 
-class Screen : public EngineObject {
+class Screen : public EngineObject, public sf::Drawable {
 private:
-    std::list<Asset> assets;
+    std::list<Asset *> assets;
     Scene scene;
 
 public:

@@ -6,7 +6,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Audio.hpp>
 
-class EngineObject : public sf::Drawable {
+class EngineObject {
 public:
     virtual void event(sf::Event event) {};
     virtual void update(const float deltatime) {};
