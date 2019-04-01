@@ -44,9 +44,9 @@ void Circle::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(circleShape, states);
 }
 
-sf::IntRect& Circle::getPossitionAndSizeRect() const
+const sf::IntRect& Circle::getPossitionAndSizeRect() const
 {
-    // IntRect intRect;
+    return circleShape.getTextureRect();
 }
 
 
@@ -65,9 +65,9 @@ void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 
-sf::IntRect& Rectangle::getPossitionAndSizeRect() const
+const sf::IntRect& Rectangle::getPossitionAndSizeRect() const
 {
-    // return rectangleShape.getTextureRect();
+    return rectangleShape.getTextureRect();
 }
 
 
@@ -77,11 +77,22 @@ sf::IntRect& Rectangle::getPossitionAndSizeRect() const
 /*--------------------------------------------------*/
 Polygon::Polygon()
 {
-    convexShape = sf::ConvexShape(sf::Vector2f(40, 40));
+    convexShape = sf::ConvexShape();
+    convexShape.setPointCount(5);
+    convexShape.setPoint(0, sf::Vector2f(0, 0));
+    convexShape.setPoint(1, sf::Vector2f(0, 10));
+    convexShape.setPoint(2, sf::Vector2f(25, 5));
+    convexShape.setPoint(3, sf::Vector2f(25, 10));
+    convexShape.setPoint(4, sf::Vector2f(25, 0));
     convexShape.setFillColor(sf::Color::White);
 }
 
 void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(convexShape, states);
+}
+
+const sf::IntRect& Polygon::getPossitionAndSizeRect() const
+{
+    return convexShape.getTextureRect();
 }

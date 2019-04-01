@@ -31,7 +31,7 @@ public:
     void event(sf::Event event) final;
     void update(const float deltatime) final;
 
-    virtual sf::IntRect& getPossitionAndSizeRect() const;
+    virtual const sf::IntRect& getPossitionAndSizeRect() const {};
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);
@@ -54,7 +54,7 @@ private:
 
 public:
     Circle();
-    sf::IntRect& getPossitionAndSizeRect() const final;
+    const sf::IntRect& getPossitionAndSizeRect() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 
@@ -75,7 +75,7 @@ private:
 
 public:
     Rectangle();
-    sf::IntRect& getPossitionAndSizeRect() const final;
+    const sf::IntRect& getPossitionAndSizeRect() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 #endif // RECTANGLE_HH
@@ -86,7 +86,7 @@ public:
 /*                  Polygon                         */
 /*--------------------------------------------------*/
 #ifndef POLYGON_HH
-#defnie POLYGON_HH
+#define POLYGON_HH
 
 class Polygon : public Shape {
 private:
@@ -94,7 +94,7 @@ private:
 
 public:
     Polygon();
-    sf::IntRect& getPossitionAndSizeRect() const final;
+    const sf::IntRect& getPossitionAndSizeRect() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 
