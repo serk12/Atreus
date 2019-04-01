@@ -7,6 +7,7 @@
 #include "EngineObject.h"
 #include "Scene.h"
 #include "../Assets/header/Shape.h"
+#include "../Assets/header/Shapes.h"
 #include "../../debug.h"
 
 class Screen : public EngineObject, public sf::Drawable {
