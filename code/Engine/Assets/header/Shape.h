@@ -7,6 +7,7 @@
 #define SHAPE_HH
 
 #include "Asset.h"
+#include <random>
 
 struct MassData
 {

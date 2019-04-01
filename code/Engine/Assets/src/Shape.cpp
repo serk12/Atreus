@@ -28,6 +28,14 @@ bool Shape::narrowDetection(const Shape& A, const Shape& B)
 {}
 
 
+/*--------------------------------------------------*/
+/*                  General Purpose                 */
+/*--------------------------------------------------*/
+sf::Vector2f randomPosition() {
+    float x = std::rand() % windowWidth;
+    float y = std::rand() % windowHeight;
+    return sf::Vector2f(x, y);
+}
 
 
 /*--------------------------------------------------*/
@@ -36,6 +44,7 @@ bool Shape::narrowDetection(const Shape& A, const Shape& B)
 Circle::Circle()
 {
     circleShape = sf::CircleShape(40);
+    circleShape.setPosition(randomPosition());
     circleShape.setFillColor(sf::Color::Red);
 }
 
@@ -56,6 +65,7 @@ const sf::IntRect& Circle::getPossitionAndSizeRect() const
 Rectangle::Rectangle()
 {
     rectangleShape = sf::RectangleShape(sf::Vector2f(40, 40));
+    rectangleShape.setPosition(randomPosition());
     rectangleShape.setFillColor(sf::Color::White);
 }
 
@@ -84,6 +94,7 @@ Polygon::Polygon()
     convexShape.setPoint(2, sf::Vector2f(25, 5));
     convexShape.setPoint(3, sf::Vector2f(25, 10));
     convexShape.setPoint(4, sf::Vector2f(25, 0));
+    convexShape.setPosition(randomPosition());
     convexShape.setFillColor(sf::Color::White);
 }
 

@@ -5,6 +5,7 @@ const float Engine::dt        = 1 / fps;
 const float Engine::timeClamp = 0.2f;
 
 int windowCoordx, windowCoordy;
+int windowWidth, windowHeight;
 
 Engine::Engine() {}
 Engine::~Engine()
@@ -15,6 +16,8 @@ Engine::~Engine()
 void Engine::start()
 {
     window.create(sf::VideoMode(W_WIDTH, W_HEIGHT), APP_NAME);
+    windowWidth   = W_WIDTH;
+    windowHeight  = W_HEIGHT;
     accumulator   = 0;
     currentScreen = new Screen();
 
@@ -49,6 +52,8 @@ void Engine::event_()
 
         case sf::Event::Resized:
             window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+            windowWidth  = event.size.width;
+            windowHeight = event.size.height;
             break;
 
         default:
