@@ -53,9 +53,15 @@ void Circle::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(circleShape, states);
 }
 
-const sf::IntRect& Circle::getPossitionAndSizeRect() const
+const sf::IntRect Circle::getPossitionAndSizeRect()
 {
-    return circleShape.getTextureRect();
+    if (boundsRect.left == -1) {
+        boundsRect.left   = circleShape.getPosition().x;
+        boundsRect.top    = circleShape.getPosition().y;
+        boundsRect.width  = circleShape.getRadius() * 2;
+        boundsRect.height = circleShape.getRadius() * 2;
+    }
+    return boundsRect;
 }
 
 
@@ -75,9 +81,15 @@ void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 
-const sf::IntRect& Rectangle::getPossitionAndSizeRect() const
+const sf::IntRect Rectangle::getPossitionAndSizeRect()
 {
-    return rectangleShape.getTextureRect();
+    if (boundsRect.left == -1) {
+        boundsRect.left   = rectangleShape.getPosition().x;
+        boundsRect.top    = rectangleShape.getPosition().y;
+        boundsRect.width  = rectangleShape.getSize().x;
+        boundsRect.height = rectangleShape.getSize().y;
+    }
+    return boundsRect;
 }
 
 
@@ -90,10 +102,10 @@ Polygon::Polygon()
     convexShape = sf::ConvexShape();
     convexShape.setPointCount(5);
     convexShape.setPoint(0, sf::Vector2f(0, 0));
-    convexShape.setPoint(1, sf::Vector2f(0, 10));
-    convexShape.setPoint(2, sf::Vector2f(25, 5));
-    convexShape.setPoint(3, sf::Vector2f(25, 10));
-    convexShape.setPoint(4, sf::Vector2f(25, 0));
+    convexShape.setPoint(1, sf::Vector2f(0, 30));
+    convexShape.setPoint(2, sf::Vector2f(30, 60));
+    convexShape.setPoint(3, sf::Vector2f(30, 30));
+    convexShape.setPoint(4, sf::Vector2f(0, 60));
     convexShape.setPosition(randomPosition());
     convexShape.setFillColor(sf::Color::White);
 }
@@ -103,7 +115,14 @@ void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(convexShape, states);
 }
 
-const sf::IntRect& Polygon::getPossitionAndSizeRect() const
+const sf::IntRect Polygon::getPossitionAndSizeRect()
 {
-    return convexShape.getTextureRect();
+    if (boundsRect.left == -1) {
+        sf::FloatRect bounds = convexShape.getGlobalBounds();
+        boundsRect.left   = bounds.left;
+        boundsRect.top    = bounds.top;
+        boundsRect.width  = bounds.width;
+        boundsRect.height = bounds.height;
+    }
+    return boundsRect;
 }

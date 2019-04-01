@@ -16,8 +16,11 @@ void Screen::event(sf::Event event)
         if (event.mouseButton.button == sf::Mouse::Left) {
             assets.push_front(new Rectangle());
         }
-        else if (event.mouseButton.button == sf::Mouse::Right) {
+        else if (event.mouseButton.button == sf::Mouse::Middle) {
             assets.push_front(new Circle());
+        }
+        else if (event.mouseButton.button == sf::Mouse::Right) {
+            assets.push_front(new Polygon());
         }
     }
 }
