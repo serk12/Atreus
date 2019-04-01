@@ -4,6 +4,7 @@
 // default values
 #define W_WIDTH 500
 #define W_HEIGHT 500
+#define FPS 120
 #define APP_NAME "ATREUS"
 
 //'fix' for the inaccuracy for the mouse coords

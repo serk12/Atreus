@@ -1,6 +1,6 @@
 #include "../header/Engine.h"
 
-const float Engine::fps       = 100;
+const float Engine::fps       = FPS;
 const float Engine::dt        = 1 / fps;
 const float Engine::timeClamp = 0.2f;
 
