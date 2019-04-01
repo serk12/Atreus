@@ -1,15 +1,13 @@
 #ifndef ENGINE_HH
 #define ENGINE_HH
 
+#include "EngineConf.h"
 #include "EngineObject.h"
 #include "Screen.h"
-#include "../../utils.h"
 #include "../../debug.h"
 
-class Engine : public EngineObject {
+class Engine : public EngineConf, public EngineObject {
 private:
-    static const float fps;
-    static const float dt;
     static const float timeClamp;
     float accumulator;
 
@@ -24,6 +22,9 @@ private:
     void draw_();
 
 public:
+    static float fps;
+    static float dt;
+
     Engine();
     ~Engine();
     void start();

@@ -4,8 +4,9 @@
 /*                  General Purpose                 */
 /*--------------------------------------------------*/
 sf::Vector2f randomPosition() {
-    float x = std::rand() % windowWidth;
-    float y = std::rand() % windowHeight;
+    sf::Vector2f size = EngineConf::getWindowSize();
+    float x           = std::rand() % (int)size.x;
+    float y           = std::rand() % (int)size.y;
     return sf::Vector2f(x, y);
 }
 
@@ -36,6 +37,11 @@ const sf::IntRect Circle::getPossitionAndSizeRect()
     return boundsRect;
 }
 
+void Circle::updatePosition(const sf::Vector2f& pos)
+{
+    circleShape.setPosition(pos);
+}
+
 
 /*--------------------------------------------------*/
 /*                  Rectangle                       */
@@ -62,6 +68,11 @@ const sf::IntRect Rectangle::getPossitionAndSizeRect()
         boundsRect.height = rectangleShape.getSize().y;
     }
     return boundsRect;
+}
+
+void Rectangle::updatePosition(const sf::Vector2f& pos)
+{
+    rectangleShape.setPosition(pos);
 }
 
 
@@ -97,4 +108,9 @@ const sf::IntRect Polygon::getPossitionAndSizeRect()
         boundsRect.height = bounds.height;
     }
     return boundsRect;
+}
+
+void Polygon::updatePosition(const sf::Vector2f& pos)
+{
+    convexShape.setPosition(pos);
 }

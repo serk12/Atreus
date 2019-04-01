@@ -1,11 +1,6 @@
 #include "../header/Engine.h"
 
-const float Engine::fps       = FPS;
-const float Engine::dt        = 1 / fps;
 const float Engine::timeClamp = 0.2f;
-
-int windowCoordx, windowCoordy;
-int windowWidth, windowHeight;
 
 Engine::Engine() {}
 Engine::~Engine()
@@ -15,9 +10,8 @@ Engine::~Engine()
 
 void Engine::start()
 {
-    window.create(sf::VideoMode(W_WIDTH, W_HEIGHT), APP_NAME);
-    windowWidth   = W_WIDTH;
-    windowHeight  = W_HEIGHT;
+    sf::Vector2f size = EngineConf::getWindowSize();
+    window.create(sf::VideoMode(size.x, size.y), APP_NAME);
     accumulator   = 0;
     currentScreen = new Screen();
 
@@ -34,9 +28,7 @@ void Engine::event_()
     sf::Event event;
     while (window.pollEvent(event))
     {
-        windowCoordx = window.getPosition().x + correctWindowCoordx;
-        windowCoordy = window.getPosition().y + correctWindowCoordy;
-
+        this->setWindowCoords(window.getPosition().y, window.getPosition().x);
         switch (event.type)
         {
         case sf::Event::Closed:
@@ -52,8 +44,7 @@ void Engine::event_()
 
         case sf::Event::Resized:
             window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
-            windowWidth  = event.size.width;
-            windowHeight = event.size.height;
+            this->setWindowSize(event.size.width, event.size.height);
             break;
 
         default:
@@ -70,11 +61,11 @@ void Engine::event_()
 void Engine::update_()
 {
     accumulator += clock.restart().asSeconds();
-
+    float dt = EngineConf::getDt();
     if (accumulator > timeClamp) accumulator = timeClamp;
-    while (accumulator > Engine::dt) {
-        currentScreen->update(Engine::dt);
-        accumulator -= Engine::dt;
+    while (accumulator > dt) {
+        currentScreen->update(dt);
+        accumulator -= dt;
     }
     /*
        const float alpha = accumulator / dt;

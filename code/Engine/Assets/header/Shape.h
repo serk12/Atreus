@@ -2,34 +2,29 @@
 #define SHAPE_HH
 
 #include "Asset.h"
+#include "ShapeConf.h"
+
+#include "../../header/EngineConf.h"
+#include <iostream>
 #include <random>
 
-struct MassData
-{
-    float mass, inv_mass;
-    float inertia, inverse_inertia;
-};
-
-struct Material
-{
-    float density, restitution;
-};
-
-class Shape : public Asset {
+class Shape : public Asset, public ShapeConf {
 private:
-    float gravityScale;
+    float gravityScale = 1000;
     Material material;
     MassData mass_data;
-    sf::Vector2f velocity;
+    sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    sf::Vector2f potentialForce;
-    sf::Vector2f externalForce;
+    sf::Vector2f potentialForce = sf::Vector2f(0, 0);
+    sf::Vector2f externalForce  = sf::Vector2f(0, 0);
+    static const sf::Vector2f gravity;
 
 public:
     void event(sf::Event event) final;
     void update(const float deltatime) final;
 
     virtual const sf::IntRect getPossitionAndSizeRect() {};
+    virtual void updatePosition(const sf::Vector2f& pos) {};
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);

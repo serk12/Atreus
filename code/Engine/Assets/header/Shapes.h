@@ -14,6 +14,7 @@ private:
 public:
     Circle();
     const sf::IntRect getPossitionAndSizeRect() final;
+    void updatePosition(const sf::Vector2f& pos) final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 
@@ -36,6 +37,7 @@ private:
 public:
     Rectangle();
     const sf::IntRect getPossitionAndSizeRect() final;
+    void updatePosition(const sf::Vector2f& pos) final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 #endif // RECTANGLE_HH
@@ -56,6 +58,7 @@ private:
 public:
     Polygon();
     const sf::IntRect getPossitionAndSizeRect() final;
+    void updatePosition(const sf::Vector2f& pos) final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 
