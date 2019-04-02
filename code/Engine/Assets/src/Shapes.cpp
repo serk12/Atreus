@@ -109,8 +109,8 @@ Polygon::Polygon()
     convexShape.setPoint(0, sf::Vector2f(0, 0));
     convexShape.setPoint(1, sf::Vector2f(0, 30));
     convexShape.setPoint(2, sf::Vector2f(30, 60));
-    convexShape.setPoint(3, sf::Vector2f(30, 30));
-    convexShape.setPoint(4, sf::Vector2f(0, 60));
+    convexShape.setPoint(3, sf::Vector2f(60, 30));
+    convexShape.setPoint(4, sf::Vector2f(0, 30));
     convexShape.setPosition(randomPosition());
     convexShape.setFillColor(sf::Color::White);
 }
@@ -142,15 +142,15 @@ float Polygon::getVolume()
     if (area == -1) {
         area = 0;
         int count = convexShape.getPointCount();
-        for (int i = 0; i < count; ++i) { // aprox
-            float a = getDistance(convexShape.getPoint(i),               convexShape.getPoint((i + 1) % count));
-            float b = getDistance(convexShape.getPoint((i + 1) % count), convexShape.getPoint((i + 2) % count));
-            float c = getDistance(convexShape.getPoint((i + 2) % count), convexShape.getPoint(i));
-
-            // Heron's Formula
-            float p = (a + b + c) / 2;
-            area += sqrt(p * (p - a) * (p - b) * (p - c));
+        // Green's theorem
+        // clockwise => negative area
+        // holes and slef-crossing => 0
+        for (int i = 0; i < count; ++i) {
+            int j = (i + 1) % count;
+            area += convexShape.getPoint(i).x * convexShape.getPoint(j).y;
+            area -= convexShape.getPoint(i).y * convexShape.getPoint(j).x;
         }
+        area = -area * 0.5;
     }
     return area * deep;
 }
