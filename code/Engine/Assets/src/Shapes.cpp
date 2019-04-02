@@ -10,6 +10,14 @@ sf::Vector2f randomPosition() {
     return sf::Vector2f(x, y);
 }
 
+float getDistance(const sf::Vector2f& A, const sf::Vector2f& B)
+{
+    float x = A.x - B.x;
+    float y = A.y - B.y;
+
+    return sqrt(x * x + y * y);
+}
+
 
 /*--------------------------------------------------*/
 /*                      Circle                      */
@@ -42,6 +50,13 @@ void Circle::updatePosition(const sf::Vector2f& pos)
     circleShape.setPosition(pos);
 }
 
+float Circle::getVolume()
+{
+    if (area == -1) {
+        area = PI * circleShape.getRadius() * circleShape.getRadius();
+    }
+    return area * deep;
+}
 
 /*--------------------------------------------------*/
 /*                  Rectangle                       */
@@ -75,6 +90,13 @@ void Rectangle::updatePosition(const sf::Vector2f& pos)
     rectangleShape.setPosition(pos);
 }
 
+float Rectangle::getVolume()
+{
+    if (area == -1) {
+        area = rectangleShape.getSize().x * rectangleShape.getSize().y;
+    }
+    return area * deep;
+}
 
 
 /*--------------------------------------------------*/
@@ -113,4 +135,22 @@ const sf::IntRect Polygon::getPossitionAndSizeRect()
 void Polygon::updatePosition(const sf::Vector2f& pos)
 {
     convexShape.setPosition(pos);
+}
+
+float Polygon::getVolume()
+{
+    if (area == -1) {
+        area = 0;
+        int count = convexShape.getPointCount();
+        for (int i = 0; i < count; ++i) { // aprox
+            float a = getDistance(convexShape.getPoint(i),               convexShape.getPoint((i + 1) % count));
+            float b = getDistance(convexShape.getPoint((i + 1) % count), convexShape.getPoint((i + 2) % count));
+            float c = getDistance(convexShape.getPoint((i + 2) % count), convexShape.getPoint(i));
+
+            // Heron's Formula
+            float p = (a + b + c) / 2;
+            area += sqrt(p * (p - a) * (p - b) * (p - c));
+        }
+    }
+    return area * deep;
 }

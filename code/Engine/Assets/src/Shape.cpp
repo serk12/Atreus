@@ -12,7 +12,7 @@ void Shape::update(const float dt)
 
     sf::IntRect  posAndSize = this->getPossitionAndSizeRect();
     sf::Vector2f pos        = sf::Vector2f(posAndSize.left, posAndSize.top);
-    float m                 = 0.001;
+    float m                 = this->getVolume() * material.density;
 
     velocity.x += ((1 / m) * potentialForce.x) * dt;
     pos.x      +=  velocity.x * dt;

@@ -10,8 +10,8 @@
 
 class Shape : public Asset, public ShapeConf {
 private:
-    float gravityScale = 1000;
-    Material material;
+    float gravityScale = 1000000;
+    Material material  = ShapeConf::Rock;
     MassData mass_data;
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
@@ -24,6 +24,7 @@ public:
     void update(const float deltatime) final;
 
     virtual const sf::IntRect getPossitionAndSizeRect() {};
+    virtual float getVolume() {};
     virtual void updatePosition(const sf::Vector2f& pos) {};
 
     static bool broadDetection(const Shape& A, const Shape& B);
