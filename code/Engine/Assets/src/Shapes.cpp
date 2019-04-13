@@ -22,11 +22,22 @@ float getDistance(const sf::Vector2f& A, const sf::Vector2f& B)
 /*--------------------------------------------------*/
 /*                      Circle                      */
 /*--------------------------------------------------*/
-Circle::Circle()
+Circle::Circle() : Circle(40, randomPosition())
+{}
+
+
+Circle::Circle(const float r, const sf::Vector2f& pos)
 {
-    circleShape = sf::CircleShape(40);
-    circleShape.setPosition(randomPosition());
+    circleShape = sf::CircleShape(r);
+    circleShape.setPosition(pos);
     circleShape.setFillColor(sf::Color::Red);
+
+    boundsRect.left   = circleShape.getPosition().x;
+    boundsRect.top    = circleShape.getPosition().y;
+    boundsRect.width  = circleShape.getRadius() * 2;
+    boundsRect.height = circleShape.getRadius() * 2;
+
+    this->calcMass();
 }
 
 void Circle::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -34,15 +45,15 @@ void Circle::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(circleShape, states);
 }
 
-const sf::IntRect Circle::getPossitionAndSizeRect()
+const sf::IntRect Circle::getPossitionAndSizeRect() const
 {
-    if (boundsRect.left == -1) {
-        boundsRect.left   = circleShape.getPosition().x;
-        boundsRect.top    = circleShape.getPosition().y;
-        boundsRect.width  = circleShape.getRadius() * 2;
-        boundsRect.height = circleShape.getRadius() * 2;
-    }
     return boundsRect;
+}
+
+const sf::Vector2f Circle::getPossition() const
+{
+    return sf::Vector2f(circleShape.getPosition().x + circleShape.getRadius(),
+                        circleShape.getPosition().y + circleShape.getRadius());
 }
 
 void Circle::updatePosition(const sf::Vector2f& pos)
@@ -61,11 +72,27 @@ float Circle::getVolume()
 /*--------------------------------------------------*/
 /*                  Rectangle                       */
 /*--------------------------------------------------*/
-Rectangle::Rectangle()
+
+Rectangle::Rectangle() : Rectangle(sf::Vector2f(40, 40), randomPosition())
+{}
+
+Rectangle::Rectangle(int i) : Rectangle(sf::Vector2f(400, 20), sf::Vector2f(50, 450))
 {
-    rectangleShape = sf::RectangleShape(sf::Vector2f(40, 40));
-    rectangleShape.setPosition(randomPosition());
+    this->setGravityScale(i);
+}
+
+Rectangle::Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos)
+{
+    rectangleShape = sf::RectangleShape(size);
+    rectangleShape.setPosition(pos);
     rectangleShape.setFillColor(sf::Color::White);
+
+    boundsRect.left   = rectangleShape.getPosition().x;
+    boundsRect.top    = rectangleShape.getPosition().y;
+    boundsRect.width  = rectangleShape.getSize().x;
+    boundsRect.height = rectangleShape.getSize().y;
+
+    this->calcMass();
 }
 
 void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -74,15 +101,15 @@ void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 
-const sf::IntRect Rectangle::getPossitionAndSizeRect()
+const sf::IntRect Rectangle::getPossitionAndSizeRect() const
 {
-    if (boundsRect.left == -1) {
-        boundsRect.left   = rectangleShape.getPosition().x;
-        boundsRect.top    = rectangleShape.getPosition().y;
-        boundsRect.width  = rectangleShape.getSize().x;
-        boundsRect.height = rectangleShape.getSize().y;
-    }
     return boundsRect;
+}
+
+const sf::Vector2f Rectangle::getPossition() const
+{
+    return sf::Vector2f(rectangleShape.getPosition().x + rectangleShape.getSize().x / 2,
+                        rectangleShape.getPosition().y + rectangleShape.getSize().y / 2);
 }
 
 void Rectangle::updatePosition(const sf::Vector2f& pos)
@@ -102,17 +129,28 @@ float Rectangle::getVolume()
 /*--------------------------------------------------*/
 /*                  Polygon                         */
 /*--------------------------------------------------*/
-Polygon::Polygon()
+Polygon::Polygon() : Polygon({
+    sf::Vector2f(0, 0),    sf::Vector2f(0, 30),    sf::Vector2f(30, 60),    sf::Vector2f(60, 30), sf::Vector2f(0, 30)
+}, randomPosition())
+{}
+
+Polygon::Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos)
 {
     convexShape = sf::ConvexShape();
-    convexShape.setPointCount(5);
-    convexShape.setPoint(0, sf::Vector2f(0, 0));
-    convexShape.setPoint(1, sf::Vector2f(0, 30));
-    convexShape.setPoint(2, sf::Vector2f(30, 60));
-    convexShape.setPoint(3, sf::Vector2f(60, 30));
-    convexShape.setPoint(4, sf::Vector2f(0, 30));
-    convexShape.setPosition(randomPosition());
+    convexShape.setPointCount(shape.size());
+    for (int i = 0; i < shape.size(); ++i) {
+        convexShape.setPoint(i, shape[i]);
+    }
+    convexShape.setPosition(pos);
     convexShape.setFillColor(sf::Color::White);
+
+    sf::FloatRect bounds = convexShape.getGlobalBounds();
+    boundsRect.left   = bounds.left;
+    boundsRect.top    = bounds.top;
+    boundsRect.width  = bounds.width;
+    boundsRect.height = bounds.height;
+
+    this->calcMass();
 }
 
 void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -120,16 +158,15 @@ void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(convexShape, states);
 }
 
-const sf::IntRect Polygon::getPossitionAndSizeRect()
+const sf::IntRect Polygon::getPossitionAndSizeRect() const
 {
-    if (boundsRect.left == -1) {
-        sf::FloatRect bounds = convexShape.getGlobalBounds();
-        boundsRect.left   = bounds.left;
-        boundsRect.top    = bounds.top;
-        boundsRect.width  = bounds.width;
-        boundsRect.height = bounds.height;
-    }
     return boundsRect;
+}
+
+const sf::Vector2f Polygon::getPossition() const
+{
+    return sf::Vector2f(boundsRect.left + boundsRect.width / 2,
+                        boundsRect.top + boundsRect.height / 2);
 }
 
 void Polygon::updatePosition(const sf::Vector2f& pos)

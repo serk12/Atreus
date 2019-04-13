@@ -16,7 +16,9 @@ private:
 
 public:
     Circle();
-    const sf::IntRect getPossitionAndSizeRect() final;
+    Circle(const float r, const sf::Vector2f& pos);
+    const sf::IntRect getPossitionAndSizeRect() const final;
+    const sf::Vector2f getPossition() const final;
     void updatePosition(const sf::Vector2f& pos) final;
     float getVolume() final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
@@ -40,10 +42,13 @@ private:
     sf::RectangleShape rectangleShape;
     sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
     float area             = -1;
-    float deep             = 1;
+    float deep             =  1;
 public:
     Rectangle();
-    const sf::IntRect getPossitionAndSizeRect() final;
+    Rectangle(int i);
+    Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos);
+    const sf::IntRect getPossitionAndSizeRect() const final;
+    const sf::Vector2f getPossition() const final;
     void updatePosition(const sf::Vector2f& pos) final;
     float getVolume() final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
@@ -58,6 +63,8 @@ public:
 #ifndef POLYGON_HH
 #define POLYGON_HH
 
+#include <vector>
+
 class Polygon : public Shape {
 private:
     sf::ConvexShape convexShape;
@@ -67,7 +74,9 @@ private:
 
 public:
     Polygon();
-    const sf::IntRect getPossitionAndSizeRect() final;
+    Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos);
+    const sf::IntRect getPossitionAndSizeRect() const final;
+    const sf::Vector2f getPossition() const final;
     void updatePosition(const sf::Vector2f& pos) final;
     float getVolume() final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;

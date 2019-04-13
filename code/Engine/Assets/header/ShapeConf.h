@@ -4,8 +4,8 @@
 
 struct MassData
 {
-    float mass, inv_mass;
-    float inertia, inverse_inertia;
+    float mass, invMass;
+    float inertia, inverseInertia;
 };
 
 struct Material
@@ -15,13 +15,13 @@ struct Material
 
 class ShapeConf {
 public:
-	static const Material Rock; 
-	static const Material Wood; 
-	static const Material Metal; 
-	static const Material BouncyBall; 
-	static const Material SuperBall; 
-	static const Material Pillow; 
-	static const Material Static; 
+    static const Material Rock;
+    static const Material Wood;
+    static const Material Metal;
+    static const Material BouncyBall;
+    static const Material SuperBall;
+    static const Material Pillow;
+    static const Material Static;
 };
 
-#endif
+#endif // ifndef SHAPECONF_HH

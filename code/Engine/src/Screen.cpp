@@ -1,7 +1,9 @@
 #include "../header/Screen.h"
 
 Screen::Screen()
-{}
+{
+    assets.push_front(new Rectangle(0));
+}
 
 Screen::~Screen()
 {}
@@ -28,7 +30,16 @@ void Screen::event(sf::Event event)
 void Screen::update(const float deltatime)
 {
     for (std::list<Asset *>::iterator itAsset = assets.begin(); itAsset != assets.end(); ++itAsset) {
-        (*itAsset)->update(deltatime);
+        Asset *asset = *itAsset;
+        asset->update(deltatime);
+        for (std::list<Asset *>::iterator itAssetCol = itAsset; itAssetCol != assets.end(); ++itAssetCol) {
+            Asset *assetCol = *itAssetCol;
+            Shape *A        = dynamic_cast<Shape *>(asset);
+            Shape *B        = dynamic_cast<Shape *>(assetCol);
+            if (Shape::broadDetection(*A, *B) and Shape::narrowDetection(*A, *B)) {
+                Shape::resolveCollision(*A, *B);
+            }
+        }
     }
 }
 
