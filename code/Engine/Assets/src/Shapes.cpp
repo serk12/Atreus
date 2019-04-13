@@ -32,11 +32,6 @@ Circle::Circle(const float r, const sf::Vector2f& pos)
     circleShape.setPosition(pos);
     circleShape.setFillColor(sf::Color::Red);
 
-    boundsRect.left   = circleShape.getPosition().x;
-    boundsRect.top    = circleShape.getPosition().y;
-    boundsRect.width  = circleShape.getRadius() * 2;
-    boundsRect.height = circleShape.getRadius() * 2;
-
     this->calcMass();
 }
 
@@ -47,6 +42,13 @@ void Circle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 const sf::IntRect Circle::getPossitionAndSizeRect() const
 {
+    sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
+
+    boundsRect.left   = circleShape.getPosition().x;
+    boundsRect.top    = circleShape.getPosition().y;
+    boundsRect.width  = circleShape.getRadius() * 2;
+    boundsRect.height = circleShape.getRadius() * 2;
+
     return boundsRect;
 }
 
@@ -87,11 +89,6 @@ Rectangle::Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos)
     rectangleShape.setPosition(pos);
     rectangleShape.setFillColor(sf::Color::White);
 
-    boundsRect.left   = rectangleShape.getPosition().x;
-    boundsRect.top    = rectangleShape.getPosition().y;
-    boundsRect.width  = rectangleShape.getSize().x;
-    boundsRect.height = rectangleShape.getSize().y;
-
     this->calcMass();
 }
 
@@ -103,6 +100,13 @@ void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 const sf::IntRect Rectangle::getPossitionAndSizeRect() const
 {
+    sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
+
+    boundsRect.left   = rectangleShape.getPosition().x;
+    boundsRect.top    = rectangleShape.getPosition().y;
+    boundsRect.width  = rectangleShape.getSize().x;
+    boundsRect.height = rectangleShape.getSize().y;
+
     return boundsRect;
 }
 
@@ -138,17 +142,11 @@ Polygon::Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos
 {
     convexShape = sf::ConvexShape();
     convexShape.setPointCount(shape.size());
-    for (int i = 0; i < shape.size(); ++i) {
+    for (unsigned int i = 0; i < shape.size(); ++i) {
         convexShape.setPoint(i, shape[i]);
     }
     convexShape.setPosition(pos);
     convexShape.setFillColor(sf::Color::White);
-
-    sf::FloatRect bounds = convexShape.getGlobalBounds();
-    boundsRect.left   = bounds.left;
-    boundsRect.top    = bounds.top;
-    boundsRect.width  = bounds.width;
-    boundsRect.height = bounds.height;
 
     this->calcMass();
 }
@@ -160,11 +158,20 @@ void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 const sf::IntRect Polygon::getPossitionAndSizeRect() const
 {
+    sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
+
+    sf::FloatRect bounds = convexShape.getGlobalBounds();
+    boundsRect.left   = bounds.left;
+    boundsRect.top    = bounds.top;
+    boundsRect.width  = bounds.width;
+    boundsRect.height = bounds.height;
+
     return boundsRect;
 }
 
 const sf::Vector2f Polygon::getPossition() const
 {
+    sf::IntRect boundsRect = this->getPossitionAndSizeRect();
     return sf::Vector2f(boundsRect.left + boundsRect.width / 2,
                         boundsRect.top + boundsRect.height / 2);
 }

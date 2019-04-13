@@ -10,9 +10,8 @@
 class Circle : public Shape {
 private:
     sf::CircleShape circleShape;
-    sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
-    float area             = -1;
-    float deep             = 1;
+    float area = -1;
+    float deep = 1;
 
 public:
     Circle();
@@ -40,9 +39,8 @@ public:
 class Rectangle : public Shape {
 private:
     sf::RectangleShape rectangleShape;
-    sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
-    float area             = -1;
-    float deep             =  1;
+    float area = -1;
+    float deep =  1;
 public:
     Rectangle();
     Rectangle(int i);
@@ -68,9 +66,8 @@ public:
 class Polygon : public Shape {
 private:
     sf::ConvexShape convexShape;
-    sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
-    float area             = -1;
-    float deep             = 1;
+    float area = -1;
+    float deep = 1;
 
 public:
     Polygon();

@@ -32,7 +32,9 @@ void Screen::update(const float deltatime)
     for (std::list<Asset *>::iterator itAsset = assets.begin(); itAsset != assets.end(); ++itAsset) {
         Asset *asset = *itAsset;
         asset->update(deltatime);
-        for (std::list<Asset *>::iterator itAssetCol = itAsset; itAssetCol != assets.end(); ++itAssetCol) {
+        std::list<Asset *>::iterator itAssetCol = itAsset;
+        ++itAssetCol;
+        for (; itAssetCol != assets.end(); ++itAssetCol) {
             Asset *assetCol = *itAssetCol;
             Shape *A        = dynamic_cast<Shape *>(asset);
             Shape *B        = dynamic_cast<Shape *>(assetCol);
