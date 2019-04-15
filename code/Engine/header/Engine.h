@@ -6,7 +6,7 @@
 #include "Screen.h"
 #include "../../debug.h"
 
-class Engine : public EngineConf, public EngineObject {
+class Engine : public EngineConf {
 private:
     static const float timeClamp;
     float accumulator;

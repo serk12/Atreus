@@ -10,9 +10,9 @@ public:
     Scene();
     ~Scene();
 
-    void event(sf::Event event);
-    void update(const float deltatime);
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    void event(sf::Event event) final;
+    void update(const float deltatime) final;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 
 #endif // SCENE_HH

@@ -26,10 +26,10 @@ public:
     void event(sf::Event event) final;
     void update(const float deltatime) final;
 
-    virtual const sf::IntRect getPossitionAndSizeRect() const {};
-    virtual const sf::Vector2f getPossition() const {};
-    virtual float getVolume() {};
-    virtual void updatePosition(const sf::Vector2f& pos) {};
+    virtual float getVolume()                                 = 0;
+    virtual const sf::Vector2f getPossition() const           = 0;
+    virtual void updatePosition(const sf::Vector2f&)          = 0;
+    virtual const sf::IntRect getPossitionAndSizeRect() const = 0;
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);

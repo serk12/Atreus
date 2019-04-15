@@ -1,6 +1,6 @@
 #include "Engine/header/Engine.h"
 
-int main(int argc, char *argv[]) {
+int main() {
     Engine engine;
     engine.start();
 }

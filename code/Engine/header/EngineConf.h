@@ -17,7 +17,7 @@
 class EngineConf {
 protected:
     static void setWindowCoords(int x, int y);
-    static void setWindowSize(int x, int y);
+    static void setWindowSize(int width, int height);
 
     // window width and height size
     static int windowWidth, windowHeight;

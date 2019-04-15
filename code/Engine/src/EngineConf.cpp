@@ -10,9 +10,16 @@ int EngineConf::windowHeight = W_HEIGHT;
 
 
 void EngineConf::setWindowCoords(int x, int y)
-{}
-void EngineConf::setWindowSize(int x, int y)
-{}
+{
+    windowCoordx = x;
+    windowCoordy = y;
+}
+
+void EngineConf::setWindowSize(int width, int height)
+{
+    windowWidth  = width;
+    windowHeight = height;
+}
 
 float EngineConf::getFPS()
 {
