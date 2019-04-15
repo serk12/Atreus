@@ -13,29 +13,33 @@ private:
     float gravityScale = 1000000;
     Material material  = ShapeConf::Rock;
     MassData massData;
+
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    sf::Vector2f potentialForce = sf::Vector2f(0, 0);
-    sf::Vector2f externalForce  = sf::Vector2f(0, 0);
-    static const sf::Vector2f gravity;
+    sf::Vector2f potentialAceleration = sf::Vector2f(0, 0);
+    sf::Vector2f externalAceleration  = sf::Vector2f(0, 0);
+    static const sf::Vector2f gravityAceleration;
+
 protected:
     void calcMass();
     void setGravityScale(int scale);
 
 public:
+    Shape();
     void event(sf::Event event) final;
     void update(const float deltatime) final;
 
-    virtual float getVolume()                                 = 0;
-    virtual const sf::Vector2f getPossition() const           = 0;
-    virtual void updatePosition(const sf::Vector2f&)          = 0;
-    virtual const sf::IntRect getPossitionAndSizeRect() const = 0;
+    virtual float getVolume()                        = 0;
+    virtual void updatePosition(const sf::Vector2f&) = 0;
+
+    // center shape position
+    virtual const sf::Vector2f getPosition() const = 0;
+    // left bottom corner position
+    virtual const sf::IntRect getPositionAndSizeRect() const = 0;
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);
     static void resolveCollision(Shape& A, Shape& B);
-
-    Shape();
 };
 
 #endif // ifndef SHAPE_HH

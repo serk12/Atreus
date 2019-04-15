@@ -40,7 +40,7 @@ void Circle::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(circleShape, states);
 }
 
-const sf::IntRect Circle::getPossitionAndSizeRect() const
+const sf::IntRect Circle::getPositionAndSizeRect() const
 {
     sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
 
@@ -52,7 +52,7 @@ const sf::IntRect Circle::getPossitionAndSizeRect() const
     return boundsRect;
 }
 
-const sf::Vector2f Circle::getPossition() const
+const sf::Vector2f Circle::getPosition() const
 {
     return sf::Vector2f(circleShape.getPosition().x + circleShape.getRadius(),
                         circleShape.getPosition().y + circleShape.getRadius());
@@ -98,7 +98,7 @@ void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 
-const sf::IntRect Rectangle::getPossitionAndSizeRect() const
+const sf::IntRect Rectangle::getPositionAndSizeRect() const
 {
     sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
 
@@ -110,7 +110,7 @@ const sf::IntRect Rectangle::getPossitionAndSizeRect() const
     return boundsRect;
 }
 
-const sf::Vector2f Rectangle::getPossition() const
+const sf::Vector2f Rectangle::getPosition() const
 {
     return sf::Vector2f(rectangleShape.getPosition().x + rectangleShape.getSize().x / 2,
                         rectangleShape.getPosition().y + rectangleShape.getSize().y / 2);
@@ -156,7 +156,7 @@ void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(convexShape, states);
 }
 
-const sf::IntRect Polygon::getPossitionAndSizeRect() const
+const sf::IntRect Polygon::getPositionAndSizeRect() const
 {
     sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
 
@@ -169,9 +169,9 @@ const sf::IntRect Polygon::getPossitionAndSizeRect() const
     return boundsRect;
 }
 
-const sf::Vector2f Polygon::getPossition() const
+const sf::Vector2f Polygon::getPosition() const
 {
-    sf::IntRect boundsRect = this->getPossitionAndSizeRect();
+    sf::IntRect boundsRect = this->getPositionAndSizeRect();
     return sf::Vector2f(boundsRect.left + boundsRect.width / 2,
                         boundsRect.top + boundsRect.height / 2);
 }

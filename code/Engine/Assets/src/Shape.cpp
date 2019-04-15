@@ -1,6 +1,6 @@
 #include "../header/Shape.h"
 
-const sf::Vector2f Shape::gravity = sf::Vector2f(0, 9.81);
+const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
 
 Shape::Shape()
 {}
@@ -21,17 +21,17 @@ void Shape::event(sf::Event event)
 
 void Shape::update(const float dt)
 {
-    potentialForce = externalForce + gravityScale * Shape::gravity;
-    externalForce  = sf::Vector2f(0, 0);
+    this->potentialAceleration = this->externalAceleration + gravityScale * Shape::gravityAceleration;
+    this->externalAceleration  = sf::Vector2f(0, 0);
 
-    sf::IntRect  posAndSize = this->getPossitionAndSizeRect();
+    sf::IntRect  posAndSize = this->getPositionAndSizeRect();
     sf::Vector2f pos        = sf::Vector2f(posAndSize.left, posAndSize.top);
     float invMass           = this->massData.invMass;
 
-    velocity.x += (invMass * potentialForce.x) * dt;
-    pos.x      +=  velocity.x * dt;
-    velocity.y += (invMass * potentialForce.y) * dt;
-    pos.y      += velocity.y * dt;
+    this->velocity.x += (invMass * this->potentialAceleration.x) * dt;
+    pos.x            +=  velocity.x * dt;
+    this->velocity.y += (invMass * this->potentialAceleration.y) * dt;
+    pos.y            += velocity.y * dt;
 
     this->updatePosition(pos);
 }
@@ -40,8 +40,8 @@ void Shape::update(const float dt)
 // if true and not sqrs => narrowDetection
 bool Shape::broadDetection(const Shape& A, const Shape& B)
 {
-    sf::IntRect aRect = A.getPossitionAndSizeRect();
-    sf::IntRect bRect = B.getPossitionAndSizeRect();
+    sf::IntRect aRect = A.getPositionAndSizeRect();
+    sf::IntRect bRect = B.getPositionAndSizeRect();
 
     int aMaxX = aRect.left + aRect.width;
     int bMaxX = bRect.left + bRect.width;
@@ -62,12 +62,13 @@ bool Shape::narrowDetection(const Shape& A, const Shape& B)
 }
 
 // http://www.yaldex.com/games-programming/0672323699_ch13lev1sec6.html
-// first aproux best explenation ^
+// first aproux. best explenation ^
 void Shape::resolveCollision(Shape& A, Shape& B)
 {
     // Calculate relative velocity
     sf::Vector2f rv = B.velocity - A.velocity;
-    sf::Vector2f n  = B.getPossition() - A.getPossition();
+    // Calculate normal vec, vec that cross the two centers.
+    sf::Vector2f n = B.getPosition() - A.getPosition();
 
     // Calculate relative velocity in terms of the normal direction
     float velAlongNormal = rv.x * n.x + rv.y * n.y;
