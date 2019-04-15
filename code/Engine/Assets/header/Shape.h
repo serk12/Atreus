@@ -10,7 +10,7 @@
 
 class Shape : public Asset, public ShapeConf {
 private:
-    float gravityScale = 1000000;
+    float gravityScale = 40000;
     Material material  = ShapeConf::Rock;
     MassData massData;
 
@@ -21,7 +21,7 @@ private:
     static const sf::Vector2f gravityAceleration;
 
 protected:
-    void calcMass();
+    void calcMass(bool massInfinite = false);
     void setGravityScale(int scale);
 
 public:

@@ -5,10 +5,16 @@ const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
 Shape::Shape()
 {}
 
-void Shape::calcMass()
+void Shape::calcMass(bool massInfinite)
 {
-    this->massData.mass    = this->getVolume() * this->material.density;
-    this->massData.invMass = 1.0 / this->massData.mass;
+    if (massInfinite) {
+        this->massData.mass    = 0;
+        this->massData.invMass = 0;
+    }
+    else {
+        this->massData.mass    = this->getVolume() * this->material.density;
+        this->massData.invMass = 1.0 / this->massData.mass;
+    }
 }
 
 void Shape::setGravityScale(int scale)
@@ -69,6 +75,9 @@ void Shape::resolveCollision(Shape& A, Shape& B)
     sf::Vector2f rv = B.velocity - A.velocity;
     // Calculate normal vec, vec that cross the two centers.
     sf::Vector2f n = B.getPosition() - A.getPosition();
+    float size     = sqrt(n.x * n.x + n.y * n.y);
+    n.x = n.x / size;
+    n.y = n.y / size;
 
     // Calculate relative velocity in terms of the normal direction
     float velAlongNormal = rv.x * n.x + rv.y * n.y;
