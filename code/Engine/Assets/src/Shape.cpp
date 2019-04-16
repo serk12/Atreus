@@ -79,18 +79,38 @@ bool Shape::narrowDetection(const Shape& A, const Shape& B)
     return !((aMaxY < bMinY) || (aMinY > bMaxY) || (aMaxX < bMinX) || (aMinX > bMaxX));
 }
 
+// pre: there is a collision
+const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B)
+{
+    sf::Vector2f n(1, 0);
+    if (A.getType() == B.getType()) {
+        n = B.getPosition() - A.getPosition();
+        if (A.getType() == Type::Circle) {
+            // Calculate normal vec, vec that cross the two centers.
+            float size = sqrt(n.x * n.x + n.y * n.y);
+            n.x = n.x / size;
+            n.y = n.y / size;
+        }
+        else if (A.getType() == Type::Rectangle) {
+            sf::Vector2f direction = A.velocity + B.velocity;
+            if (direction.x > direction.y) {
+                n = ((direction.x > 0) ? sf::Vector2f(1, 0) : sf::Vector2f(-1, 0));
+            }
+            else {
+                n = ((direction.y > 0) ? sf::Vector2f(0, 1) : sf::Vector2f(0, -1));
+            }
+        }
+    }
+    return n;
+}
+
 // http://www.yaldex.com/games-programming/0672323699_ch13lev1sec6.html
 // first aproux. best explenation ^
 void Shape::resolveCollision(Shape& A, Shape& B)
 {
     // Calculate relative velocity
     sf::Vector2f rv = B.velocity - A.velocity;
-    // Calculate normal vec, vec that cross the two centers.
-    sf::Vector2f n = B.getPosition() - A.getPosition();
-    float size     = sqrt(n.x * n.x + n.y * n.y);
-    n.x = n.x / size;
-    n.y = n.y / size;
-
+    sf::Vector2f n  = Shape::calculateNormal(A, B);
     // Calculate relative velocity in terms of the normal direction
     float velAlongNormal = rv.x * n.x + rv.y * n.y;
 

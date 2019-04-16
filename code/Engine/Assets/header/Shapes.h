@@ -14,6 +14,10 @@ private:
     float deep = 1;
 
 public:
+    Shape::Type getType() const final {
+        return Shape::Type::Circle;
+    }
+
     Circle();
     Circle(const float r, const sf::Vector2f& pos);
     const sf::IntRect getPositionAndSizeRect() const final;
@@ -41,7 +45,12 @@ private:
     sf::RectangleShape rectangleShape;
     float area = -1;
     float deep =  1;
+
 public:
+    Shape::Type getType() const final {
+        return Shape::Type::Rectangle;
+    }
+
     Rectangle();
     Rectangle(int i);
     Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos);
@@ -70,6 +79,10 @@ private:
     float deep = 1;
 
 public:
+    Shape::Type getType() const final {
+        return Shape::Type::Polygon;
+    }
+
     Polygon();
     Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos);
     const sf::IntRect getPositionAndSizeRect() const final;

@@ -24,6 +24,8 @@ protected:
     void calcMass(bool massInfinite = false);
     void setGravityScale(int scale);
 
+    enum Type { Circle, Rectangle, Polygon };
+
 public:
     Shape();
     void event(sf::Event event) final;
@@ -36,10 +38,12 @@ public:
     virtual const sf::Vector2f getPosition() const = 0;
     // left bottom corner position
     virtual const sf::IntRect getPositionAndSizeRect() const = 0;
+    virtual Shape::Type getType() const                      = 0;
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);
     static void resolveCollision(Shape& A, Shape& B);
+    static const sf::Vector2f calculateNormal(const Shape& A, const Shape& B);
 };
 
 #endif // ifndef SHAPE_HH
