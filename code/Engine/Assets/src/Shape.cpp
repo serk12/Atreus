@@ -101,6 +101,32 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B)
             }
         }
     }
+    else {
+        if (((A.getType() == Type::Circle)    && (B.getType() == Type::Rectangle)) ||
+            ((A.getType() == Type::Rectangle) && (B.getType() == Type::Circle))) {
+            sf::Vector2f circle    = ((A.getType() == Type::Circle) ? A.getPosition() : B.getPosition());
+            sf::IntRect  rectan    = ((A.getType() == Type::Rectangle) ? A.getPositionAndSizeRect() : B.getPositionAndSizeRect());
+            sf::Vector2f direction = A.velocity + B.velocity;
+
+            if ((direction.x > 0) && (direction.y > 0)) {
+                n = circle - sf::Vector2f(rectan.left + rectan.width, rectan.top + rectan.height);
+            }
+            else if ((direction.x < 0) && (direction.y > 0)) {
+                n = circle - sf::Vector2f(rectan.left, rectan.top + rectan.height);
+            }
+            else if ((direction.x > 0) && (direction.y < 0)) {
+                n = circle - sf::Vector2f(rectan.left + rectan.width, rectan.top);
+            }
+            else {
+                n = circle - sf::Vector2f(rectan.left, rectan.top);
+            }
+
+            float size = sqrt(n.x * n.x + n.y * n.y);
+            n.x = n.x / size;
+            n.y = n.y / size;
+            if (B.getType() == Type::Rectangle) n = -n;
+        }
+    }
     return n;
 }
 

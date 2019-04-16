@@ -19,6 +19,7 @@ public:
     }
 
     Circle();
+    Circle(int i);
     Circle(const float r, const sf::Vector2f& pos);
     const sf::IntRect getPositionAndSizeRect() const final;
     const sf::Vector2f getPosition() const final;

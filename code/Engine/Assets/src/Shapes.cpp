@@ -25,6 +25,11 @@ float getDistance(const sf::Vector2f& A, const sf::Vector2f& B)
 Circle::Circle() : Circle(40, randomPosition())
 {}
 
+Circle::Circle(int i) : Circle(200, sf::Vector2f(50, 400))
+{
+    this->setGravityScale(i);
+    this->calcMass(true);
+}
 
 Circle::Circle(const float r, const sf::Vector2f& pos)
 {
