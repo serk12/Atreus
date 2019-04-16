@@ -42,9 +42,26 @@ void Shape::update(const float dt)
     this->updatePosition(pos);
 }
 
-// Broad Detection using AABBx to have a cheap and quick solution
-// if true and not sqrs => narrowDetection
+// Broad Detection using CircleVsCircle to have a cheap and quick solution
+// if true => narrowDetection
 bool Shape::broadDetection(const Shape& A, const Shape& B)
+{
+    sf::IntRect aRect = A.getPositionAndSizeRect();
+    sf::IntRect bRect = B.getPositionAndSizeRect();
+
+    int aRad = ((aRect.height > aRect.width) ? aRect.height : aRect.width);
+    aRad = (aRad + 1) / 2;
+    int bRad = ((bRect.height > bRect.width) ? bRect.height : bRect.width);
+    bRad = (bRad + 1) / 2;
+
+    int r    = aRad + bRad;
+    int left = (aRect.left + aRad) - (bRect.left + bRad);
+    int top  = (aRect.top  + aRad) - (bRect.top  + bRad);
+
+    return r * r < (top * top + left * left);
+}
+
+bool Shape::narrowDetection(const Shape& A, const Shape& B)
 {
     sf::IntRect aRect = A.getPositionAndSizeRect();
     sf::IntRect bRect = B.getPositionAndSizeRect();
@@ -60,11 +77,6 @@ bool Shape::broadDetection(const Shape& A, const Shape& B)
     int bMinY = bRect.top;
 
     return !((aMaxY < bMinY) || (aMinY > bMaxY) || (aMaxX < bMinX) || (aMinX > bMaxX));
-}
-
-bool Shape::narrowDetection(const Shape& A, const Shape& B)
-{
-    return true;
 }
 
 // http://www.yaldex.com/games-programming/0672323699_ch13lev1sec6.html
