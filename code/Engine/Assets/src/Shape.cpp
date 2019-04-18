@@ -5,6 +5,15 @@ const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
 Shape::Shape()
 {}
 
+bool Shape::canBeRemoved() const
+{
+    sf::FloatRect pos        = this->getPositionAndSizeRect();
+    sf::Vector2f  windowSize = EngineConf::getWindowSize();
+
+    return pos.left > windowSize.x || pos.top > windowSize.y ||
+           pos.left + pos.width < 0 || pos.top + pos.height < 0;
+}
+
 void Shape::calcMass(bool massInfinite)
 {
     if (massInfinite) {
@@ -35,9 +44,9 @@ void Shape::update(const float dt)
     float invMass            = this->massData.invMass;
 
     this->velocity.x += (invMass * this->potentialAceleration.x) * dt;
-    pos.x            +=  velocity.x * dt;
+    pos.x             = floor(pos.x + velocity.x * dt);
     this->velocity.y += (invMass * this->potentialAceleration.y) * dt;
-    pos.y            += velocity.y * dt;
+    pos.y             = floor(pos.y + velocity.y * dt);
 
     this->updatePosition(pos);
 }

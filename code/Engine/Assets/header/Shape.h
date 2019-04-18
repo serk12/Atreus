@@ -30,10 +30,10 @@ public:
     Shape();
     void event(sf::Event event) final;
     void update(const float deltatime) final;
+    bool canBeRemoved() const final;
 
     virtual float getVolume()                        = 0;
     virtual void updatePosition(const sf::Vector2f&) = 0;
-
     // center shape position
     virtual const sf::Vector2f getPosition() const = 0;
     // left bottom corner position

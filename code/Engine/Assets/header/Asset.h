@@ -3,6 +3,9 @@
 
 #include "../../header/EngineObject.h"
 
-class Asset : public EngineObject {};
+class Asset : public EngineObject {
+public:
+    virtual bool canBeRemoved() const = 0;
+};
 
 #endif // ASSET_HH

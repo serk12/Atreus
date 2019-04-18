@@ -42,6 +42,10 @@ void Screen::update(const float deltatime)
                 Shape::resolveCollision(*A, *B);
             }
         }
+        if (asset->isRemoved()) {
+            delete asset;
+            itAsset = assets.erase(itAsset);
+        }
     }
 }
 
