@@ -2,7 +2,7 @@
 
 Screen::Screen()
 {
-    assets.push_front(new Circle(0));
+    assets.push_front(new Rectangle(0));
 }
 
 Screen::~Screen()

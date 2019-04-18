@@ -45,9 +45,9 @@ void Circle::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(circleShape, states);
 }
 
-const sf::IntRect Circle::getPositionAndSizeRect() const
+const sf::FloatRect Circle::getPositionAndSizeRect() const
 {
-    sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
+    sf::FloatRect boundsRect = sf::FloatRect(-1, -1, -1, -1);
 
     boundsRect.left   = circleShape.getPosition().x;
     boundsRect.top    = circleShape.getPosition().y;
@@ -104,9 +104,9 @@ void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 }
 
 
-const sf::IntRect Rectangle::getPositionAndSizeRect() const
+const sf::FloatRect Rectangle::getPositionAndSizeRect() const
 {
-    sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
+    sf::FloatRect boundsRect = sf::FloatRect(-1, -1, -1, -1);
 
     boundsRect.left   = rectangleShape.getPosition().x;
     boundsRect.top    = rectangleShape.getPosition().y;
@@ -162,9 +162,9 @@ void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(convexShape, states);
 }
 
-const sf::IntRect Polygon::getPositionAndSizeRect() const
+const sf::FloatRect Polygon::getPositionAndSizeRect() const
 {
-    sf::IntRect boundsRect = sf::IntRect(-1, -1, -1, -1);
+    sf::FloatRect boundsRect = sf::FloatRect(-1, -1, -1, -1);
 
     sf::FloatRect bounds = convexShape.getGlobalBounds();
     boundsRect.left   = bounds.left;
@@ -177,7 +177,7 @@ const sf::IntRect Polygon::getPositionAndSizeRect() const
 
 const sf::Vector2f Polygon::getPosition() const
 {
-    sf::IntRect boundsRect = this->getPositionAndSizeRect();
+    sf::FloatRect boundsRect = this->getPositionAndSizeRect();
     return sf::Vector2f(boundsRect.left + boundsRect.width / 2,
                         boundsRect.top + boundsRect.height / 2);
 }

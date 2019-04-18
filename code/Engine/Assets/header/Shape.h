@@ -37,8 +37,8 @@ public:
     // center shape position
     virtual const sf::Vector2f getPosition() const = 0;
     // left bottom corner position
-    virtual const sf::IntRect getPositionAndSizeRect() const = 0;
-    virtual Shape::Type getType() const                      = 0;
+    virtual const sf::FloatRect getPositionAndSizeRect() const = 0;
+    virtual Shape::Type getType() const                        = 0;
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);

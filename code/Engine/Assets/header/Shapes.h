@@ -21,7 +21,7 @@ public:
     Circle();
     Circle(int i);
     Circle(const float r, const sf::Vector2f& pos);
-    const sf::IntRect getPositionAndSizeRect() const final;
+    const sf::FloatRect getPositionAndSizeRect() const final;
     const sf::Vector2f getPosition() const final;
     void updatePosition(const sf::Vector2f& pos) final;
     float getVolume() final;
@@ -55,7 +55,7 @@ public:
     Rectangle();
     Rectangle(int i);
     Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos);
-    const sf::IntRect getPositionAndSizeRect() const final;
+    const sf::FloatRect getPositionAndSizeRect() const final;
     const sf::Vector2f getPosition() const final;
     void updatePosition(const sf::Vector2f& pos) final;
     float getVolume() final;
@@ -86,7 +86,7 @@ public:
 
     Polygon();
     Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos);
-    const sf::IntRect getPositionAndSizeRect() const final;
+    const sf::FloatRect getPositionAndSizeRect() const final;
     const sf::Vector2f getPosition() const final;
     void updatePosition(const sf::Vector2f& pos) final;
     float getVolume() final;
