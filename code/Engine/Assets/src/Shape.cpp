@@ -7,11 +7,13 @@ Shape::Shape()
 
 bool Shape::canBeRemoved() const
 {
-    sf::FloatRect pos        = this->getPositionAndSizeRect();
-    sf::Vector2f  windowSize = EngineConf::getWindowSize();
+    ShapeRect rect   = this->getShapeRect();
+    sf::Vector2f min = rect.getMin();
+    sf::Vector2f max = rect.getMax();
 
-    return pos.left > windowSize.x || pos.top > windowSize.y ||
-           pos.left + pos.width < 0 || pos.top + pos.height < 0;
+    sf::Vector2f windowSize = EngineConf::getWindowSize();
+
+    return min.x > windowSize.x || min.y > windowSize.y || max.x < 0 || max.y < 0;
 }
 
 void Shape::calcMass(bool massInfinite)
@@ -39,9 +41,9 @@ void Shape::update(const float dt)
     this->potentialAceleration = this->externalAceleration + gravityScale * Shape::gravityAceleration;
     this->externalAceleration  = sf::Vector2f(0, 0);
 
-    sf::FloatRect posAndSize = this->getPositionAndSizeRect();
-    sf::Vector2f  pos        = sf::Vector2f(posAndSize.left, posAndSize.top);
-    float invMass            = this->massData.invMass;
+    ShapeRect rect   = this->getShapeRect();
+    sf::Vector2f pos = rect.getPosition();
+    float invMass    = this->massData.invMass;
 
     this->velocity.x += (invMass * this->potentialAceleration.x) * dt;
     pos.x             = floor(pos.x + velocity.x * dt);
@@ -55,20 +57,15 @@ void Shape::update(const float dt)
 // if true => narrowDetection
 bool Shape::broadDetection(const Shape& A, const Shape& B)
 {
-    sf::FloatRect aRect = A.getPositionAndSizeRect();
-    sf::FloatRect bRect = B.getPositionAndSizeRect();
+    ShapeRect aRect = A.getShapeRect();
+    ShapeRect bRect = B.getShapeRect();
 
-    float aRad = ((aRect.height > aRect.width) ? aRect.height : aRect.width);
-    aRad = aRad / 2;
-    float bRad = ((bRect.height > bRect.width) ? bRect.height : bRect.width);
-    bRad = bRad / 2;
+    sf::Vector2f bPos = bRect.getCenterPosition();
+    sf::Vector2f aPos = aRect.getCenterPosition();
+    float top         = aPos.y - bPos.y;
+    float left        = aPos.x - bPos.x;
 
-    float r           = aRad + bRad;
-    sf::Vector2f aPos = A.getPosition();
-    sf::Vector2f bPos = B.getPosition();
-
-    float top  = aPos.y - bPos.y;
-    float left = aPos.x - bPos.x;
+    float r = bRect.getRadius() + aRect.getRadius();
 
     return r * r > (top * top + left * left);
 }
@@ -77,28 +74,29 @@ bool Shape::narrowDetection(const Shape& A, const Shape& B)
 {
     if ((A.getType() == B.getType()) && (A.getType() == Type::Circle)) return true;
 
-    sf::FloatRect aRect = A.getPositionAndSizeRect();
-    sf::FloatRect bRect = B.getPositionAndSizeRect();
+    ShapeRect aRect = A.getShapeRect();
+    ShapeRect bRect = B.getShapeRect();
 
-    int aMaxX = aRect.left + aRect.width;
-    int bMaxX = bRect.left + bRect.width;
-    int aMaxY = aRect.top  + aRect.height;
-    int bMaxY = bRect.top  + bRect.height;
+    sf::Vector2f aMin = aRect.getPosition();
+    sf::Vector2f bMin = bRect.getPosition();
 
-    int aMinX = aRect.left;
-    int bMinX = bRect.left;
-    int aMinY = aRect.top;
-    int bMinY = bRect.top;
+    sf::Vector2f aMax = aRect.getPosPlusSize();
+    sf::Vector2f bMax = bRect.getPosPlusSize();
 
-    return !((aMaxY < bMinY) || (aMinY > bMaxY) || (aMaxX < bMinX) || (aMinX > bMaxX));
+    // Amax > Bmin && Amin < Bmin
+    return !((aMax.y < bMin.y) || (aMin.y > bMax.y) ||
+             (aMax.x < bMin.x) || (aMin.x > bMax.x));
 }
 
 // pre: there is a collision
 const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B)
 {
     sf::Vector2f n(0, 0);
+    ShapeRect    aRect = A.getShapeRect();
+    ShapeRect    bRect = B.getShapeRect();
+
     if (A.getType() == B.getType()) {
-        n = B.getPosition() - A.getPosition();
+        n = aRect.getCenterPosition() - aRect.getCenterPosition();
         if (A.getType() == Type::Circle) {
             // Calculate normal vec, vec that cross the two centers.
             float size = sqrt(n.x * n.x + n.y * n.y);
@@ -118,21 +116,24 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B)
     else {
         if (((A.getType() == Type::Circle)    && (B.getType() == Type::Rectangle)) ||
             ((A.getType() == Type::Rectangle) && (B.getType() == Type::Circle))) {
-            sf::Vector2f  circle    = ((A.getType() == Type::Circle) ? A.getPosition() : B.getPosition());
-            sf::FloatRect rectan    = ((A.getType() == Type::Rectangle) ? A.getPositionAndSizeRect() : B.getPositionAndSizeRect());
-            sf::Vector2f  direction = A.velocity + B.velocity;
+            sf::Vector2f circle = ((A.getType() == Type::Circle) ? aRect.getPosition() : bRect.getPosition());
 
+            ShapeRect rectan        = ((A.getType() == Type::Rectangle) ? aRect : bRect);
+            sf::Vector2f posAndSize = rectan.getPosPlusSize();
+            sf::Vector2f pos        = rectan.getPosition();
+
+            sf::Vector2f direction = A.velocity + B.velocity;
             if ((direction.x > 0) && (direction.y > 0)) {
-                n = circle - sf::Vector2f(rectan.left + rectan.width, rectan.top + rectan.height);
+                n = circle - posAndSize;
             }
             else if ((direction.x < 0) && (direction.y > 0)) {
-                n = circle - sf::Vector2f(rectan.left, rectan.top + rectan.height);
+                n = circle - sf::Vector2f(pos.x, posAndSize.y);
             }
             else if ((direction.x > 0) && (direction.y < 0)) {
-                n = circle - sf::Vector2f(rectan.left + rectan.width, rectan.top);
+                n = circle - sf::Vector2f(posAndSize.x, pos.y);
             }
             else {
-                n = circle - sf::Vector2f(rectan.left, rectan.top);
+                n = circle - pos;
             }
 
             float size = sqrt(n.x * n.x + n.y * n.y);

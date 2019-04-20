@@ -5,6 +5,8 @@
 #include "ShapeConf.h"
 
 #include "../../header/EngineConf.h"
+#include "ShapeRect.h"
+
 #include <random>
 #include <iostream>
 
@@ -34,11 +36,8 @@ public:
 
     virtual float getVolume()                        = 0;
     virtual void updatePosition(const sf::Vector2f&) = 0;
-    // center shape position
-    virtual const sf::Vector2f getPosition() const = 0;
-    // left bottom corner position
-    virtual const sf::FloatRect getPositionAndSizeRect() const = 0;
-    virtual Shape::Type getType() const                        = 0;
+    virtual const ShapeRect getShapeRect() const     = 0;
+    virtual Shape::Type getType() const              = 0;
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);

@@ -45,22 +45,10 @@ void Circle::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(circleShape, states);
 }
 
-const sf::FloatRect Circle::getPositionAndSizeRect() const
+const ShapeRect Circle::getShapeRect() const
 {
-    sf::FloatRect boundsRect = sf::FloatRect(-1, -1, -1, -1);
-
-    boundsRect.left   = circleShape.getPosition().x;
-    boundsRect.top    = circleShape.getPosition().y;
-    boundsRect.width  = circleShape.getRadius() * 2;
-    boundsRect.height = circleShape.getRadius() * 2;
-
-    return boundsRect;
-}
-
-const sf::Vector2f Circle::getPosition() const
-{
-    return sf::Vector2f(circleShape.getPosition().x + circleShape.getRadius(),
-                        circleShape.getPosition().y + circleShape.getRadius());
+    float diameter = circleShape.getRadius() * 2;
+    return ShapeRect(circleShape.getPosition(), sf::Vector2f(diameter, diameter));
 }
 
 void Circle::updatePosition(const sf::Vector2f& pos)
@@ -103,23 +91,9 @@ void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(rectangleShape, states);
 }
 
-
-const sf::FloatRect Rectangle::getPositionAndSizeRect() const
+const ShapeRect Rectangle::getShapeRect() const
 {
-    sf::FloatRect boundsRect = sf::FloatRect(-1, -1, -1, -1);
-
-    boundsRect.left   = rectangleShape.getPosition().x;
-    boundsRect.top    = rectangleShape.getPosition().y;
-    boundsRect.width  = rectangleShape.getSize().x;
-    boundsRect.height = rectangleShape.getSize().y;
-
-    return boundsRect;
-}
-
-const sf::Vector2f Rectangle::getPosition() const
-{
-    return sf::Vector2f(rectangleShape.getPosition().x + rectangleShape.getSize().x / 2,
-                        rectangleShape.getPosition().y + rectangleShape.getSize().y / 2);
+    return ShapeRect(rectangleShape.getPosition(), rectangleShape.getSize());
 }
 
 void Rectangle::updatePosition(const sf::Vector2f& pos)
@@ -162,24 +136,10 @@ void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
     target.draw(convexShape, states);
 }
 
-const sf::FloatRect Polygon::getPositionAndSizeRect() const
+const ShapeRect Polygon::getShapeRect() const
 {
-    sf::FloatRect boundsRect = sf::FloatRect(-1, -1, -1, -1);
-
     sf::FloatRect bounds = convexShape.getGlobalBounds();
-    boundsRect.left   = bounds.left;
-    boundsRect.top    = bounds.top;
-    boundsRect.width  = bounds.width;
-    boundsRect.height = bounds.height;
-
-    return boundsRect;
-}
-
-const sf::Vector2f Polygon::getPosition() const
-{
-    sf::FloatRect boundsRect = this->getPositionAndSizeRect();
-    return sf::Vector2f(boundsRect.left + boundsRect.width / 2,
-                        boundsRect.top + boundsRect.height / 2);
+    return ShapeRect(bounds);
 }
 
 void Polygon::updatePosition(const sf::Vector2f& pos)
