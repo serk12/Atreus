@@ -4,6 +4,7 @@
 /*                  General Purpose                 */
 /*--------------------------------------------------*/
 sf::Vector2f randomPosition() {
+    std::srand(std::time(nullptr));
     sf::Vector2f size = EngineConf::getWindowSize();
     float x           = std::rand() % (int)size.x;
     float y           = std::rand() % (int)size.y;
