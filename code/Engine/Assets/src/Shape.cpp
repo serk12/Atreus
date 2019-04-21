@@ -53,6 +53,24 @@ void Shape::update(const float dt)
     this->updatePosition(pos);
 }
 
+inline float clamp(float x, float  min, float  max)
+{
+    return (x < min) ? min : ((x > max) ? max : x);
+}
+
+sf::Vector2f Shape::minDistanceSquareCircle(const Shape& A, const Shape& B)
+{
+    ShapeRect shape           = (A.getType() == Type::Circle) ? B.getShapeRect() : A.getShapeRect();
+    ShapeRect circle          = (A.getType() == Type::Circle) ? A.getShapeRect() : B.getShapeRect();
+    sf::Vector2f shapeCenter  = shape.getCenterPosition();
+    sf::Vector2f circleCenter = circle.getCenterPosition();
+
+    sf::Vector2f clampCircleInShape(clamp(circleCenter.x, shape.getPosition().x, shape.getPosPlusSize().x),
+                                    clamp(circleCenter.y, shape.getPosition().y, shape.getPosPlusSize().y));
+
+    return circleCenter - clampCircleInShape;
+}
+
 // Broad Detection using CircleVsCircle to have a cheap and quick solution
 // if true => narrowDetection
 bool Shape::broadDetection(const Shape& A, const Shape& B)
@@ -76,16 +94,23 @@ bool Shape::narrowDetection(const Shape& A, const Shape& B)
 
     ShapeRect aRect = A.getShapeRect();
     ShapeRect bRect = B.getShapeRect();
+    if ((A.getType() == B.getType()) && (A.getType() == Type::Rectangle)) {
+        sf::Vector2f aMin = aRect.getPosition();
+        sf::Vector2f bMin = bRect.getPosition();
 
-    sf::Vector2f aMin = aRect.getPosition();
-    sf::Vector2f bMin = bRect.getPosition();
+        sf::Vector2f aMax = aRect.getPosPlusSize();
+        sf::Vector2f bMax = bRect.getPosPlusSize();
 
-    sf::Vector2f aMax = aRect.getPosPlusSize();
-    sf::Vector2f bMax = bRect.getPosPlusSize();
-
-    // Amax > Bmin && Amin < Bmin
-    return !((aMax.y < bMin.y) || (aMin.y > bMax.y) ||
-             (aMax.x < bMin.x) || (aMin.x > bMax.x));
+        // Amax > Bmin && Amin < Bmin
+        return !((aMax.y < bMin.y) || (aMin.y > bMax.y) ||
+                 (aMax.x < bMin.x) || (aMin.x > bMax.x));
+    }
+    else if (((A.getType() == Type::Circle)    && (B.getType() == Type::Rectangle)) ||
+             ((A.getType() == Type::Rectangle) && (B.getType() == Type::Circle))) {
+        sf::Vector2f dis = Shape::minDistanceSquareCircle(A, B);
+        float r          = (A.getType() == Type::Circle) ? aRect.getRadius() : bRect.getRadius();
+        return dis.x * dis.x + dis.y * dis.y < r * r;
+    }
 }
 
 // pre: there is a collision
@@ -116,26 +141,7 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B)
     else {
         if (((A.getType() == Type::Circle)    && (B.getType() == Type::Rectangle)) ||
             ((A.getType() == Type::Rectangle) && (B.getType() == Type::Circle))) {
-            sf::Vector2f circle = ((A.getType() == Type::Circle) ? aRect.getPosition() : bRect.getPosition());
-
-            ShapeRect rectan        = ((A.getType() == Type::Rectangle) ? aRect : bRect);
-            sf::Vector2f posAndSize = rectan.getPosPlusSize();
-            sf::Vector2f pos        = rectan.getPosition();
-
-            sf::Vector2f direction = A.velocity + B.velocity;
-            if ((direction.x > 0) && (direction.y > 0)) {
-                n = circle - posAndSize;
-            }
-            else if ((direction.x < 0) && (direction.y > 0)) {
-                n = circle - sf::Vector2f(pos.x, posAndSize.y);
-            }
-            else if ((direction.x > 0) && (direction.y < 0)) {
-                n = circle - sf::Vector2f(posAndSize.x, pos.y);
-            }
-            else {
-                n = circle - pos;
-            }
-
+            n = Shape::minDistanceSquareCircle(A, B);
             float size = sqrt(n.x * n.x + n.y * n.y);
             n.x = n.x / size;
             n.y = n.y / size;

@@ -22,6 +22,11 @@ private:
     sf::Vector2f externalAceleration  = sf::Vector2f(0, 0);
     static const sf::Vector2f gravityAceleration;
 
+    // min distance between the closest corner and the circle center
+    // Pre: A or B has to be a circle
+    // Post: Circle - Shape
+    static sf::Vector2f minDistanceSquareCircle(const Shape& A, const Shape& B);
+
 protected:
     void calcMass(bool massInfinite = false);
     void setGravityScale(int scale);
