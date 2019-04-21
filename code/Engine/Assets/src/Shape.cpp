@@ -60,9 +60,9 @@ inline float clamp(float x, float  min, float  max)
 
 sf::Vector2f Shape::minDistanceSquareCircle(const Shape& A, const Shape& B)
 {
-    ShapeRect shape           = (A.getType() == Type::Circle) ? B.getShapeRect() : A.getShapeRect();
-    ShapeRect circle          = (A.getType() == Type::Circle) ? A.getShapeRect() : B.getShapeRect();
-    sf::Vector2f shapeCenter  = shape.getCenterPosition();
+    ShapeRect shape  = (A.getType() == Type::Circle) ? B.getShapeRect() : A.getShapeRect();
+    ShapeRect circle = (A.getType() == Type::Circle) ? A.getShapeRect() : B.getShapeRect();
+
     sf::Vector2f circleCenter = circle.getCenterPosition();
 
     sf::Vector2f clampCircleInShape(clamp(circleCenter.x, shape.getPosition().x, shape.getPosPlusSize().x),
@@ -92,9 +92,10 @@ bool Shape::narrowDetection(const Shape& A, const Shape& B)
 {
     if ((A.getType() == B.getType()) && (A.getType() == Type::Circle)) return true;
 
-    ShapeRect aRect = A.getShapeRect();
-    ShapeRect bRect = B.getShapeRect();
     if ((A.getType() == B.getType()) && (A.getType() == Type::Rectangle)) {
+        ShapeRect aRect = A.getShapeRect();
+        ShapeRect bRect = B.getShapeRect();
+
         sf::Vector2f aMin = aRect.getPosition();
         sf::Vector2f bMin = bRect.getPosition();
 
@@ -108,20 +109,21 @@ bool Shape::narrowDetection(const Shape& A, const Shape& B)
     else if (((A.getType() == Type::Circle)    && (B.getType() == Type::Rectangle)) ||
              ((A.getType() == Type::Rectangle) && (B.getType() == Type::Circle))) {
         sf::Vector2f dis = Shape::minDistanceSquareCircle(A, B);
-        float r          = (A.getType() == Type::Circle) ? aRect.getRadius() : bRect.getRadius();
+        float r          = (A.getType() == Type::Circle) ? A.getShapeRect().getRadius() : B.getShapeRect().getRadius();
         return dis.x * dis.x + dis.y * dis.y < r * r;
     }
+    return false;
 }
 
 // pre: there is a collision
 const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B)
 {
     sf::Vector2f n(0, 0);
-    ShapeRect    aRect = A.getShapeRect();
-    ShapeRect    bRect = B.getShapeRect();
 
     if (A.getType() == B.getType()) {
-        n = aRect.getCenterPosition() - aRect.getCenterPosition();
+        ShapeRect aRect = A.getShapeRect();
+        ShapeRect bRect = B.getShapeRect();
+        n = bRect.getCenterPosition() - aRect.getCenterPosition();
         if (A.getType() == Type::Circle) {
             // Calculate normal vec, vec that cross the two centers.
             float size = sqrt(n.x * n.x + n.y * n.y);

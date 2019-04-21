@@ -53,7 +53,7 @@ const sf::Vector2f ShapeRect::getPosPlusSize() const
     return sf::Vector2f(x, y);
 }
 
-const float ShapeRect::getRadius() const
+float ShapeRect::getRadius() const
 {
     float r = std::max(this->size.x, this->size.y) / 2;
     return r;

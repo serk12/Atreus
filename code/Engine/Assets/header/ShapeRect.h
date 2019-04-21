@@ -18,7 +18,7 @@ public:
     const sf::Vector2f getSize() const;
     const sf::Vector2f getMax() const;
     const sf::Vector2f getMin() const;
-    const float getRadius() const;
+    float getRadius() const;
 };
 
 #endif // ifndef SHAPERECT_HH
