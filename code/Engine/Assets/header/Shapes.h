@@ -10,7 +10,7 @@
 class Circle : public Shape {
 private:
     sf::CircleShape circleShape;
-    float area = -1;
+    float area;
     float deep = 1;
 
 public:
@@ -23,7 +23,7 @@ public:
     Circle(const float r, const sf::Vector2f& pos);
     virtual const ShapeRect getShapeRect() const final;
     void updatePosition(const sf::Vector2f& pos) final;
-    float getVolume() final;
+    float getVolume() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 
@@ -43,7 +43,7 @@ public:
 class Rectangle : public Shape {
 private:
     sf::RectangleShape rectangleShape;
-    float area = -1;
+    float area;
     float deep =  1;
 
 public:
@@ -56,7 +56,7 @@ public:
     Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos);
     virtual const ShapeRect getShapeRect() const final;
     void updatePosition(const sf::Vector2f& pos) final;
-    float getVolume() final;
+    float getVolume() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 #endif // RECTANGLE_HH
@@ -74,7 +74,7 @@ public:
 class Polygon : public Shape {
 private:
     sf::ConvexShape convexShape;
-    float area = -1;
+    float area;
     float deep = 1;
 
 public:
@@ -86,7 +86,7 @@ public:
     Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos);
     virtual const ShapeRect getShapeRect() const final;
     void updatePosition(const sf::Vector2f& pos) final;
-    float getVolume() final;
+    float getVolume() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
 

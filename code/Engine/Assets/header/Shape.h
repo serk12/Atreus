@@ -39,7 +39,7 @@ public:
     void update(const float deltatime) final;
     bool canBeRemoved() const final;
 
-    virtual float getVolume()                        = 0;
+    virtual float getVolume() const                  = 0;
     virtual void updatePosition(const sf::Vector2f&) = 0;
     virtual const ShapeRect getShapeRect() const     = 0;
     virtual Shape::Type getType() const              = 0;

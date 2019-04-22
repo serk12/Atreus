@@ -38,6 +38,8 @@ Circle::Circle(const float r, const sf::Vector2f& pos)
     circleShape.setPosition(pos);
     circleShape.setFillColor(sf::Color::Red);
 
+    area = PI * circleShape.getRadius() * circleShape.getRadius();
+
     this->calcMass();
 }
 
@@ -57,11 +59,8 @@ void Circle::updatePosition(const sf::Vector2f& pos)
     circleShape.setPosition(pos);
 }
 
-float Circle::getVolume()
+float Circle::getVolume() const
 {
-    if (area == -1) {
-        area = PI * circleShape.getRadius() * circleShape.getRadius();
-    }
     return area * deep;
 }
 
@@ -84,6 +83,8 @@ Rectangle::Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos)
     rectangleShape.setPosition(pos);
     rectangleShape.setFillColor(sf::Color::White);
 
+    area = rectangleShape.getSize().x * rectangleShape.getSize().y;
+
     this->calcMass();
 }
 
@@ -102,11 +103,8 @@ void Rectangle::updatePosition(const sf::Vector2f& pos)
     rectangleShape.setPosition(pos);
 }
 
-float Rectangle::getVolume()
+float Rectangle::getVolume() const
 {
-    if (area == -1) {
-        area = rectangleShape.getSize().x * rectangleShape.getSize().y;
-    }
     return area * deep;
 }
 
@@ -129,6 +127,18 @@ Polygon::Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos
     convexShape.setPosition(pos);
     convexShape.setFillColor(sf::Color::White);
 
+    area = 0;
+    int count = convexShape.getPointCount();
+    // Green's theorem
+    // clockwise => negative area
+    // holes and slef-crossing => 0
+    for (int i = 0; i < count; ++i) {
+        int j = (i + 1) % count;
+        area += convexShape.getPoint(i).x * convexShape.getPoint(j).y;
+        area -= convexShape.getPoint(i).y * convexShape.getPoint(j).x;
+    }
+    area = -area * 0.5;
+
     this->calcMass();
 }
 
@@ -148,20 +158,7 @@ void Polygon::updatePosition(const sf::Vector2f& pos)
     convexShape.setPosition(pos);
 }
 
-float Polygon::getVolume()
+float Polygon::getVolume() const
 {
-    if (area == -1) {
-        area = 0;
-        int count = convexShape.getPointCount();
-        // Green's theorem
-        // clockwise => negative area
-        // holes and slef-crossing => 0
-        for (int i = 0; i < count; ++i) {
-            int j = (i + 1) % count;
-            area += convexShape.getPoint(i).x * convexShape.getPoint(j).y;
-            area -= convexShape.getPoint(i).y * convexShape.getPoint(j).x;
-        }
-        area = -area * 0.5;
-    }
     return area * deep;
 }
