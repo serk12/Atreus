@@ -23,8 +23,10 @@ $(FOLDERS):
 	@mkdir $@
 
 .SECONDEXPANSION:
-%.o: $$(shell find  ./code/ -name  $$(notdir $$(basename $$@)).cpp)
-	@$(CXX) $(CXXFLAGS) -g -c $< -o $@ $(LINKS)
+src = $$(shell find  ./code/ -name  $$(notdir $$(basename $$@)).cpp)
+header = $$(shell find  ./code/ -name  $$(notdir $$(basename $$@)).h)
+%.o: $(src) $(header)
+	$(CXX) $(CXXFLAGS) -g -c $< -o $@ $(LINKS)
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 	@$(CXX) $(CXXFLAGS) -o $(BUILD_DIR)/$(TARGET) $^ $(LINKS)
