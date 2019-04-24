@@ -6,7 +6,11 @@ Screen::Screen()
 }
 
 Screen::~Screen()
-{}
+{
+    for (std::list<Asset *>::iterator itAsset = assets.begin(); itAsset != assets.end(); ++itAsset) {
+        delete (*itAsset);
+    }
+}
 
 void Screen::event(sf::Event event)
 {

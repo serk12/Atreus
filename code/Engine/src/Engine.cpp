@@ -6,6 +6,7 @@ Engine::Engine() {}
 Engine::~Engine()
 {
     delete currentScreen;
+    window.close();
 }
 
 void Engine::start()
