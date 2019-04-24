@@ -2,8 +2,9 @@
 #define ENGINE_HH
 
 #include "EngineConf.h"
-#include "EngineObject.h"
+#include "../EngineObject.h"
 #include "Screen.h"
+
 #include "../../debug.h"
 
 class Engine : public EngineConf {
