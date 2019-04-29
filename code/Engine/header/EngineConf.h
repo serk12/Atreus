@@ -9,10 +9,7 @@
 #define correctWindowCoordx -8
 #define correctWindowCoordy -38
 
-#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Audio.hpp>
 
 class EngineConf {
 protected:
