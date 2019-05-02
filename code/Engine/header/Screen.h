@@ -12,15 +12,16 @@
 #include "../../debug.h"
 
 class Screen : public EngineObject, public sf::Drawable {
-private:
+  private:
     std::list<Asset *> assets;
     Scene scene;
 
-public:
+  public:
     Screen();
     ~Screen();
 
-    void event(sf::Event event) final;
+    void event(sf::Event& event) final;
+    void event(atreus::Event& event) final;
     void update(const float deltatime) final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };

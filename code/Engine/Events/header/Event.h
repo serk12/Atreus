@@ -3,14 +3,18 @@
 
 #include <SFML/Graphics.hpp>
 
+class Shape;
+
 namespace atreus {
 class Event {
   public:
+    Event();
+    ~Event();
+
     struct CollisionEvent
     {
-        float        penetration;
-        float        totalInerseMass;
-        sf::Vector2f n;
+        Shape *A;
+        Shape *B;
     };
 
     enum EventType

@@ -33,8 +33,13 @@ void Shape::setGravityScale(int scale)
     this->gravityScale = scale;
 }
 
-void Shape::event(sf::Event event)
+void Shape::event(sf::Event& event)
 {}
+
+void Shape::event(atreus::Event& event)
+{
+    if (event.type == atreus::Event::EventType::Collision) {}
+}
 
 void Shape::update(const float dt)
 {

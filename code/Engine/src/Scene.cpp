@@ -5,7 +5,10 @@ Scene::Scene()
 
 Scene::~Scene() {}
 
-void Scene::event(sf::Event event)
+void Scene::event(sf::Event& event)
+{}
+
+void Scene::event(atreus::Event& event)
 {}
 
 void Scene::update(const float deltatime)

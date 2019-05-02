@@ -4,7 +4,7 @@
 #include "../../EngineObject.h"
 
 class Asset : public EngineObject {
-public:
+  public:
     virtual ~Asset();
     virtual bool canBeRemoved() const = 0;
 };

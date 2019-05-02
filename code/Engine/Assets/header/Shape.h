@@ -11,7 +11,7 @@
 #include <iostream>
 
 class Shape : public Asset, public ShapeConf {
-private:
+  private:
     float gravityScale = 40000;
     Material material  = ShapeConf::Rock;
     MassData massData;
@@ -27,15 +27,16 @@ private:
     // Post: Circle - Shape
     static sf::Vector2f minDistanceSquareCircle(const Shape& A, const Shape& B);
 
-protected:
+  protected:
     void calcMass(bool massInfinite = false);
     void setGravityScale(int scale);
 
     enum Type { Circle, Rectangle, Polygon };
 
-public:
+  public:
     Shape();
-    void event(sf::Event event) final;
+    void event(sf::Event& event) final;
+    void event(atreus::Event& event) final;
     void update(const float deltatime) final;
     bool canBeRemoved() const final;
 

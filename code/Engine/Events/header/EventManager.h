@@ -1,15 +1,20 @@
 #ifndef EVENTMANAGER_HH
 #define EVENTMANAGER_HH
 
+#include <iostream>
+
 #include <queue>
 #include "Event.h"
+
 namespace atreus {
+class Event;
+
 class EventManager {
   private:
-    std::queue<Event *> events;
+    static std::queue<Event *> events;
   public:
-    void pushEvent(Event *event);
-    bool pollEvent(Event& event);
+    static void pushEvent(Event *event);
+    static bool pollEvent(Event *& event);
     // bool waitEvent(const Event& event); //for now there is no need
 };
 }

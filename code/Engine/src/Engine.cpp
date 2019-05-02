@@ -16,8 +16,7 @@ void Engine::start()
     accumulator   = 0;
     currentScreen = new Screen();
 
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         event_();
         update_();
         draw_();
@@ -27,18 +26,15 @@ void Engine::start()
 void Engine::event_()
 {
     sf::Event event;
-    while (window.pollEvent(event))
-    {
+    while (window.pollEvent(event)) {
         this->setWindowCoords(window.getPosition().y, window.getPosition().x);
-        switch (event.type)
-        {
+        switch (event.type) {
         case sf::Event::Closed:
             window.close();
             break;
 
         case sf::Event::KeyPressed:
-            if (event.key.code == sf::Keyboard::Escape)
-            {
+            if (event.key.code == sf::Keyboard::Escape) {
                 window.close();
             }
             break;
@@ -52,9 +48,15 @@ void Engine::event_()
             break;
         }
 
-        if (currentScreen != NULL)
-        {
+        if (currentScreen != NULL) {
             currentScreen->event(event);
+        }
+    }
+
+    atreus::Event *eventA = NULL;
+    while (atreus::EventManager::pollEvent(eventA)) {
+        if (currentScreen != NULL) {
+            currentScreen->event((*eventA));
         }
     }
 }
@@ -81,8 +83,7 @@ void Engine::draw_()
 
     window.clear(sf::Color::Black);
 
-    if (currentScreen != NULL)
-    {
+    if (currentScreen != NULL) {
         window.draw(*currentScreen);
     }
 

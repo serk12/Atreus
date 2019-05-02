@@ -8,12 +8,12 @@
 #define CIRCLE_HH
 
 class Circle : public Shape {
-private:
+  private:
     sf::CircleShape circleShape;
     float area;
     float deep = 1;
 
-public:
+  public:
     Shape::Type getType() const final {
         return Shape::Type::Circle;
     }
@@ -41,12 +41,12 @@ public:
 #define PI 3.141516
 
 class Rectangle : public Shape {
-private:
+  private:
     sf::RectangleShape rectangleShape;
     float area;
     float deep =  1;
 
-public:
+  public:
     Shape::Type getType() const final {
         return Shape::Type::Rectangle;
     }
@@ -72,12 +72,12 @@ public:
 #include <vector>
 
 class Polygon : public Shape {
-private:
+  private:
     sf::ConvexShape convexShape;
     float area;
     float deep = 1;
 
-public:
+  public:
     Shape::Type getType() const final {
         return Shape::Type::Polygon;
     }

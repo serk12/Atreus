@@ -1,19 +1,21 @@
 #include "../header/EventManager.h"
-namespace atreus {
+
+using namespace atreus;
+std::queue<Event *> EventManager::events;
+
 void EventManager::pushEvent(Event *event)
 {
-    events.push(event);
+    EventManager::events.push(event);
 }
 
-bool EventManager::pollEvent(Event& event)
+bool EventManager::pollEvent(Event *& event)
 {
-    if (!events.empty()) {
-        event = *(events.front());
-        events.pop();
+    if (!EventManager::events.empty()) {
+        event = EventManager::events.front();
+        EventManager::events.pop();
         return true;
     }
     else {
         return false;
     }
-}
 }
