@@ -1,7 +1,7 @@
 #include "../header/Shape.h"
 
 const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
-const float Shape::slop                      = 0.01;
+const float Shape::slop                      = 0.05;
 const float Shape::slopPercent               = 0.2;
 
 Shape::Shape()
@@ -53,8 +53,6 @@ void Shape::event(atreus::Event& event)
             sf::Vector2f posB = event.collisionData.B->getShapeRect().getPosition();
             posB += event.collisionData.B->massData.invMass * correction;
             event.collisionData.B->updatePosition(posB);
-            // std::cout << event.collisionData.penetration << " " <<
-            // correction.x << " " << correction.y << std::endl;
             event.collisionData.done = !event.collisionData.done;
         }
     }
