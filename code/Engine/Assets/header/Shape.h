@@ -21,7 +21,8 @@ class Shape : public Asset, public ShapeConf {
     sf::Vector2f potentialAceleration = sf::Vector2f(0, 0);
     sf::Vector2f externalAceleration  = sf::Vector2f(0, 0);
     static const sf::Vector2f gravityAceleration;
-
+    static const float slop;
+    static const float slopPercent;
     // min distance between the closest corner and the circle center
     // Pre: A or B has to be a circle
     // Post: Circle - Shape
@@ -47,8 +48,8 @@ class Shape : public Asset, public ShapeConf {
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);
-    static void resolveCollision(Shape& A, Shape& B);
-    static const sf::Vector2f calculateNormal(const Shape& A, const Shape& B);
+    static void resolveCollision(Shape& A, Shape& B, sf::Vector2f n);
+    static const sf::Vector2f calculateNormal(const Shape& A, const Shape& B, float& penetration);
 };
 
 #endif // ifndef SHAPE_HH

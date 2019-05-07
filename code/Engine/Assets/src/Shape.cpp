@@ -1,6 +1,8 @@
 #include "../header/Shape.h"
 
 const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
+const float Shape::slop                      = 0.01;
+const float Shape::slopPercent               = 0.2;
 
 Shape::Shape()
 {}
@@ -38,7 +40,24 @@ void Shape::event(sf::Event& event)
 
 void Shape::event(atreus::Event& event)
 {
-    if (event.type == atreus::Event::EventType::Collision) {}
+    if (event.type == atreus::Event::EventType::Collision) {
+        if (!event.collisionData.done) {
+            sf::Vector2f correction = (std::max(event.collisionData.penetration * Shape::slop, 0.0f)
+                                       / (event.collisionData.A->massData.invMass + event.collisionData.B->massData.invMass))
+                                      * Shape::slopPercent *event.collisionData.n;
+
+            sf::Vector2f posA = event.collisionData.A->getShapeRect().getPosition();
+            posA -= event.collisionData.A->massData.invMass * correction;
+            event.collisionData.A->updatePosition(posA);
+
+            sf::Vector2f posB = event.collisionData.B->getShapeRect().getPosition();
+            posB += event.collisionData.B->massData.invMass * correction;
+            event.collisionData.B->updatePosition(posB);
+            // std::cout << event.collisionData.penetration << " " <<
+            // correction.x << " " << correction.y << std::endl;
+            event.collisionData.done = !event.collisionData.done;
+        }
+    }
 }
 
 void Shape::update(const float dt)
@@ -51,10 +70,11 @@ void Shape::update(const float dt)
     float invMass    = this->massData.invMass;
 
     this->velocity.x += (invMass * this->potentialAceleration.x) * dt;
-    pos.x             = floor(pos.x + velocity.x * dt);
-    this->velocity.y += (invMass * this->potentialAceleration.y) * dt;
-    pos.y             = floor(pos.y + velocity.y * dt);
+    pos.x             = pos.x + velocity.x * dt;
 
+    this->velocity.y += (invMass * this->potentialAceleration.y) * dt;
+    pos.y             = pos.y + velocity.y * dt;
+    // descomposet works faster^
     this->updatePosition(pos);
 }
 
@@ -121,10 +141,10 @@ bool Shape::narrowDetection(const Shape& A, const Shape& B)
 }
 
 // pre: there is a collision
-const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B)
+const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float& penetration)
 {
     sf::Vector2f n(0, 0);
-
+    penetration = -1;
     if (A.getType() == B.getType()) {
         ShapeRect aRect = A.getShapeRect();
         ShapeRect bRect = B.getShapeRect();
@@ -144,6 +164,13 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B)
                 n = ((direction.y > 0) ? sf::Vector2f(0, 1) : sf::Vector2f(0, -1));
             }
         }
+        float aExtendedY = (aRect.getPosition().y - aRect.getPosPlusSize().y) / 2;
+        float bExtendedY = (bRect.getPosition().y - bRect.getPosPlusSize().y) / 2;
+        float yOverlap   = aExtendedY + bExtendedY - std::abs(n.y);
+        float aExtendedX = (aRect.getPosition().x - aRect.getPosPlusSize().x) / 2;
+        float bExtendedX = (bRect.getPosition().x - bRect.getPosPlusSize().x) / 2;
+        float xOverlap   = aExtendedX + bExtendedX - std::abs(n.x);
+        penetration = std::max(xOverlap, yOverlap);
     }
     else {
         if (((A.getType() == Type::Circle)    && (B.getType() == Type::Rectangle)) ||
@@ -153,18 +180,20 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B)
             n.x = n.x / size;
             n.y = n.y / size;
             if (B.getType() == Type::Rectangle) n = -n;
+            float r = (A.getType() == Type::Circle) ? A.getShapeRect().getRadius() : B.getShapeRect().getRadius();
+            penetration = size - r;
         }
     }
+    penetration = std::abs(penetration);
     return n;
 }
 
 // http://www.yaldex.com/games-programming/0672323699_ch13lev1sec6.html
 // first aproux. best explenation ^
-void Shape::resolveCollision(Shape& A, Shape& B)
+void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n)
 {
     // Calculate relative velocity
     sf::Vector2f rv = B.velocity - A.velocity;
-    sf::Vector2f n  = Shape::calculateNormal(A, B);
     // Calculate relative velocity in terms of the normal direction
     float velAlongNormal = rv.x * n.x + rv.y * n.y;
 

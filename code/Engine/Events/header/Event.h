@@ -13,8 +13,11 @@ class Event {
 
     struct CollisionEvent
     {
-        Shape *A;
-        Shape *B;
+        Shape       *A;
+        Shape       *B;
+        sf::Vector2f n;
+        float        penetration;
+        bool         done;
     };
 
     enum EventType
