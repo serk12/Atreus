@@ -190,6 +190,7 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float&
 // first aproux. best explenation ^
 void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n)
 {
+    /* COLISION IMPULSE */
     // Calculate relative velocity
     sf::Vector2f rv = B.velocity - A.velocity;
     // Calculate relative velocity in terms of the normal direction
@@ -210,4 +211,26 @@ void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n)
     sf::Vector2f impulse = j * n;
     A.velocity -= A.massData.invMass * impulse;
     B.velocity += B.massData.invMass * impulse;
+
+    /* FRICTION */
+    rv = B.velocity - A.velocity;
+    sf::Vector2f t = rv - (rv.x * n.x + rv.y * n.y) * n;
+    float aux      =  sqrt(t.x * t.x + t.y * t.y);
+    if (aux != 0) {
+        t.x = t.x / aux; t.y = t.y / aux;
+    }
+
+    float jt = -(rv.x * t.x + rv.y * t.y);
+    jt /= (A.massData.invMass + B.massData.invMass);
+    float mu = sqrt(A.material.staticFriction * A.material.staticFriction + B.material.staticFriction * B.material.staticFriction);
+
+    sf::Vector2f frictionImpulse;
+    if (abs(jt) < j * mu) frictionImpulse = jt * t;
+    else {
+        float dynamicFriction = sqrt(A.material.dynamicFriction * A.material.dynamicFriction + B.material.dynamicFriction * B.material.dynamicFriction);
+        frictionImpulse = -j * t * dynamicFriction;
+    }
+
+    A.velocity -= A.massData.invMass * frictionImpulse;
+    B.velocity += B.massData.invMass * frictionImpulse;
 }

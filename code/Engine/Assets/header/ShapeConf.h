@@ -10,11 +10,11 @@ struct MassData
 
 struct Material
 {
-    float density, restitution;
+    float density, restitution, staticFriction, dynamicFriction;
 };
 
 class ShapeConf {
-public:
+  public:
     static const Material Rock;
     static const Material Wood;
     static const Material Metal;
