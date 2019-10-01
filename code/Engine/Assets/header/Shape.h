@@ -13,7 +13,7 @@
 class Shape : public Asset, public ShapeConf {
   private:
     float gravityScale = 40000;
-    Material material  = ShapeConf::Rock;
+    Material material  = ShapeConf::Wood;
     MassData massData;
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);

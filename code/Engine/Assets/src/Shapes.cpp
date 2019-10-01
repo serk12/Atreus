@@ -6,8 +6,8 @@
 sf::Vector2f randomPosition() {
     std::srand(std::time(nullptr));
     sf::Vector2f size = EngineConf::getWindowSize();
-    float x           = std::rand() % (int)size.x;
-    float y           = std::rand() % (int)size.y;
+    float x           = 50 + std::rand() % (int)(size.x - 100);
+    float y           = std::rand() % 400;
     return sf::Vector2f(x, y);
 }
 
