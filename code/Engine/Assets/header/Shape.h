@@ -13,7 +13,7 @@
 class Shape : public Asset, public ShapeConf {
   private:
     float gravityScale = 40000;
-    Material material  = ShapeConf::Wood;
+    Material material  = ShapeConf::BouncyBall;
     MassData massData;
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
@@ -29,6 +29,7 @@ class Shape : public Asset, public ShapeConf {
     static sf::Vector2f minDistanceSquareCircle(const Shape& A, const Shape& B);
 
   protected:
+    void setMaterial(const Material& shapeConf);
     void calcMass(bool massInfinite = false);
     void setGravityScale(int scale);
 

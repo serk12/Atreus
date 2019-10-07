@@ -73,6 +73,7 @@ Rectangle::Rectangle() : Rectangle(sf::Vector2f(40, 40), randomPosition())
 
 Rectangle::Rectangle(int i) : Rectangle(sf::Vector2f(400, 20), sf::Vector2f(50, 450))
 {
+    this->setMaterial(ShapeConf::Static);
     this->setGravityScale(i);
     this->calcMass(true);
 }

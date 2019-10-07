@@ -1,8 +1,8 @@
 #include "../header/Shape.h"
 
 const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
-const float Shape::slop                      = 0.7;
-const float Shape::slopPercent               = 0.02;
+const float Shape::slop                      = 0.4;
+const float Shape::slopPercent               = 0.024;
 
 Shape::Shape()
 {}
@@ -16,6 +16,11 @@ bool Shape::canBeRemoved() const
     sf::Vector2f windowSize = EngineConf::getWindowSize();
 
     return min.x > windowSize.x || min.y > windowSize.y || max.x < 0 || max.y < 0;
+}
+
+void Shape::setMaterial(const Material& shapeConf)
+{
+    this->material = shapeConf;
 }
 
 void Shape::calcMass(bool massInfinite)
