@@ -20,6 +20,9 @@ class Engine : public EngineConf {
     void update_();
     void draw_();
 
+  protected:
+    void setScreen(Screen *screen);
+
   public:
     Engine();
     ~Engine();

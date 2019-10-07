@@ -1,6 +1,6 @@
-#include "Engine/header/Engine.h"
+#include "Game/header/Game.h"
 
 int main() {
-    Engine engine;
-    engine.start();
+    Game game;
+    game.load();
 }

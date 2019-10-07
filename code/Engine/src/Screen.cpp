@@ -1,10 +1,11 @@
 #include "../header/Screen.h"
 
-Screen::Screen()
+Screen::Screen() {}
+Screen::Screen(std::list<Asset *>& assets, Scene& scene)
 {
-    assets.push_front(new Rectangle(0));
+    this->assets = assets;
+    this->scene  = scene;
 }
-
 Screen::~Screen()
 {
     for (std::list<Asset *>::iterator itAsset = assets.begin(); itAsset != assets.end(); ++itAsset) {

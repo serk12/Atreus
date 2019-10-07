@@ -18,6 +18,7 @@ class Screen : public EngineObject, public sf::Drawable {
 
   public:
     Screen();
+    Screen(std::list<Asset *>& assets, Scene& scene);
     ~Screen();
 
     void event(sf::Event& event) final;
