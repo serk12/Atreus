@@ -22,7 +22,7 @@ class Circle : public Shape {
     Circle(int i);
     Circle(const float r, const sf::Vector2f& pos);
     virtual const ShapeRect getShapeRect() const final;
-    void updatePosition(const sf::Vector2f& pos) final;
+    void updateTransform(const sf::Vector2f& pos, const float rotation) final;
     float getVolume() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
@@ -55,7 +55,7 @@ class Rectangle : public Shape {
     Rectangle(int i);
     Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos);
     virtual const ShapeRect getShapeRect() const final;
-    void updatePosition(const sf::Vector2f& pos) final;
+    void updateTransform(const sf::Vector2f& pos, const float rotation) final;
     float getVolume() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };
@@ -85,7 +85,7 @@ class Polygon : public Shape {
     Polygon();
     Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos);
     virtual const ShapeRect getShapeRect() const final;
-    void updatePosition(const sf::Vector2f& pos) final;
+    void updateTransform(const sf::Vector2f& pos, const float rotation) final;
     float getVolume() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
 };

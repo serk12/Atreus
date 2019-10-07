@@ -29,7 +29,7 @@ Circle::Circle() : Circle(40, randomPosition())
 Circle::Circle(int i) : Circle(200, sf::Vector2f(50, 400))
 {
     this->setGravityScale(i);
-    this->calcMass(true);
+    this->calcMass(0, true);
 }
 
 Circle::Circle(const float r, const sf::Vector2f& pos)
@@ -40,7 +40,7 @@ Circle::Circle(const float r, const sf::Vector2f& pos)
 
     area = PI * circleShape.getRadius() * circleShape.getRadius();
 
-    this->calcMass();
+    this->calcMass(circleShape.getRadius() * circleShape.getRadius());
 }
 
 void Circle::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -54,9 +54,10 @@ const ShapeRect Circle::getShapeRect() const
     return ShapeRect(circleShape.getPosition(), sf::Vector2f(diameter, diameter));
 }
 
-void Circle::updatePosition(const sf::Vector2f& pos)
+void Circle::updateTransform(const sf::Vector2f& pos, const float rotation)
 {
     circleShape.setPosition(pos);
+    if (!std::isnan(rotation)) circleShape.setRotation(rotation);
 }
 
 float Circle::getVolume() const
@@ -75,7 +76,7 @@ Rectangle::Rectangle(int i) : Rectangle(sf::Vector2f(400, 20), sf::Vector2f(50, 
 {
     this->setMaterial(ShapeConf::Static);
     this->setGravityScale(i);
-    this->calcMass(true);
+    this->calcMass(0, true);
 }
 
 Rectangle::Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos)
@@ -86,7 +87,7 @@ Rectangle::Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos)
 
     area = rectangleShape.getSize().x * rectangleShape.getSize().y;
 
-    this->calcMass();
+    this->calcMass(area);
 }
 
 void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -99,9 +100,10 @@ const ShapeRect Rectangle::getShapeRect() const
     return ShapeRect(rectangleShape.getPosition(), rectangleShape.getSize());
 }
 
-void Rectangle::updatePosition(const sf::Vector2f& pos)
+void Rectangle::updateTransform(const sf::Vector2f& pos, const float rotation)
 {
     rectangleShape.setPosition(pos);
+    if (!std::isnan(rotation)) rectangleShape.setRotation(rotation);
 }
 
 float Rectangle::getVolume() const
@@ -140,7 +142,7 @@ Polygon::Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos
     }
     area = -area * 0.5;
 
-    this->calcMass();
+    this->calcMass(area);
 }
 
 void Polygon::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -154,9 +156,10 @@ const ShapeRect Polygon::getShapeRect() const
     return ShapeRect(bounds);
 }
 
-void Polygon::updatePosition(const sf::Vector2f& pos)
+void Polygon::updateTransform(const sf::Vector2f& pos, const float rotation)
 {
     convexShape.setPosition(pos);
+    if (!std::isnan(rotation)) convexShape.setRotation(rotation);
 }
 
 float Polygon::getVolume() const

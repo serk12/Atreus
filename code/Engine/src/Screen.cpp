@@ -15,7 +15,7 @@ Screen::~Screen()
 void Screen::event(atreus::Event& event)
 {
     if (event.type == atreus::Event::EventType::Collision) {
-        Shape::resolveCollision(*event.collisionData.A, *event.collisionData.B, event.collisionData.n);
+        Shape::resolveCollision(*event.collisionData.A, *event.collisionData.B, event.collisionData.n, event.collisionData.contact);
         event.collisionData.A->event(event);
         event.collisionData.B->event(event);
     }
@@ -59,6 +59,7 @@ void Screen::update(const float deltatime)
                 data.A               = A;
                 data.B               = B;
                 data.n               = Shape::calculateNormal(*A, *B, data.penetration);
+                data.contact         = sf::Vector2f(3, 3);
                 data.done            = false;
                 event->collisionData = data;
                 atreus::EventManager::pushEvent(event);

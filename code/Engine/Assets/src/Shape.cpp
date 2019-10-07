@@ -5,7 +5,9 @@ const float Shape::slop                      = 0.4;
 const float Shape::slopPercent               = 0.024;
 
 Shape::Shape()
-{}
+{
+    orientation = angularVelocity = torque = 0;
+}
 
 bool Shape::canBeRemoved() const
 {
@@ -23,15 +25,16 @@ void Shape::setMaterial(const Material& shapeConf)
     this->material = shapeConf;
 }
 
-void Shape::calcMass(bool massInfinite)
+void Shape::calcMass(float area, bool massInfinite)
 {
     if (massInfinite) {
-        this->massData.mass    = 0;
-        this->massData.invMass = 0;
+        this->massData.mass = this->massData.invMass = this->massData.inertia = this->massData.inverseInertia = 0;
     }
     else {
-        this->massData.mass    = this->getVolume() * this->material.density;
-        this->massData.invMass = 1.0 / this->massData.mass;
+        this->massData.mass           = this->getVolume() * this->material.density;
+        this->massData.invMass        = 1.0 / this->massData.mass;
+        this->massData.inertia        = this->massData.mass * area;
+        this->massData.inverseInertia = 1.0 / this->massData.inertia;
     }
 }
 
@@ -53,11 +56,11 @@ void Shape::event(atreus::Event& event)
 
             sf::Vector2f posA = event.collisionData.A->getShapeRect().getPosition();
             posA -= event.collisionData.A->massData.invMass * correction;
-            event.collisionData.A->updatePosition(posA);
+            event.collisionData.A->updateTransform(posA);
 
             sf::Vector2f posB = event.collisionData.B->getShapeRect().getPosition();
             posB += event.collisionData.B->massData.invMass * correction;
-            event.collisionData.B->updatePosition(posB);
+            event.collisionData.B->updateTransform(posB);
             event.collisionData.done = !event.collisionData.done;
         }
     }
@@ -78,7 +81,10 @@ void Shape::update(const float dt)
     this->velocity.y += (invMass * this->potentialAceleration.y) * dt;
     pos.y             = pos.y + velocity.y * dt;
     // descomposet works faster^
-    this->updatePosition(pos);
+
+    angularVelocity += torque * this->massData.inverseInertia * dt;
+    orientation     += angularVelocity * dt;
+    this->updateTransform(pos, orientation);
 }
 
 inline float clamp(float x, float  min, float  max)
@@ -193,7 +199,7 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float&
 
 // http://www.yaldex.com/games-programming/0672323699_ch13lev1sec6.html
 // first aproux. best explenation ^
-void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n)
+void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact)
 {
     /* COLISION IMPULSE */
     // Calculate relative velocity
@@ -214,8 +220,14 @@ void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n)
 
     // Apply impulse
     sf::Vector2f impulse = j * n;
+
     A.velocity -= A.massData.invMass * impulse;
+    sf::Vector2f Acontact = contact - A.getShapeRect().getPosition();
+    A.angularVelocity -= A.massData.inverseInertia * (Acontact.x * (-impulse.y) - Acontact.x * (-impulse.x));
+
     B.velocity += B.massData.invMass * impulse;
+    sf::Vector2f Bcontact = contact - B.getShapeRect().getPosition();
+    B.angularVelocity += B.massData.inverseInertia * (Bcontact.x * (-impulse.y) - Bcontact.x * (-impulse.x));
 
     /* FRICTION */
     rv = B.velocity - A.velocity;

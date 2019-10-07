@@ -16,6 +16,7 @@ class Event {
         Shape       *A;
         Shape       *B;
         sf::Vector2f n;
+        sf::Vector2f contact;
         float        penetration;
         bool         done;
     };
