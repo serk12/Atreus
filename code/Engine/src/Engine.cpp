@@ -13,6 +13,7 @@ void Engine::start()
 {
     sf::Vector2f size = EngineConf::getWindowSize();
     window.create(sf::VideoMode(size.x, size.y), APP_NAME);
+    window.setFramerateLimit(FPS);
     accumulator   = 0;
     currentScreen = new Screen();
 
