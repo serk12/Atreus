@@ -1,11 +1,16 @@
 #include "../header/Game.h"
 
-void Game::load()
+void Game::init()
 {
     std::list<Asset *> assets;
     assets.push_front(new Rectangle(0));
-    Scene   scene;
-    Screen *level0 = new Screen(assets, scene);
-    this->setScreen(level0);
+    GameScene scene;
+    screens.push_back(new GameScreen(assets, scene));
+}
+
+void Game::load()
+{
+    init();
+    this->setScreen(*(screens.begin()));
     this->start();
 }
