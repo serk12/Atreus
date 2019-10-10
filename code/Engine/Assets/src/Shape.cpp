@@ -55,11 +55,13 @@ void Shape::event(atreus::Event& event)
                                       * Shape::slopPercent *event.collisionData.n;
 
             sf::Vector2f posA = event.collisionData.A->getShapeRect().getPosition();
-            posA -= event.collisionData.A->massData.invMass * correction;
+            posA  -= event.collisionData.A->massData.invMass * correction;
+            posA.x = trunc(posA.x); posA.y = trunc(posA.y);
             event.collisionData.A->updateTransform(posA);
 
             sf::Vector2f posB = event.collisionData.B->getShapeRect().getPosition();
-            posB += event.collisionData.B->massData.invMass * correction;
+            posB  += event.collisionData.B->massData.invMass * correction;
+            posB.x = trunc(posB.x); posB.y = trunc(posB.y);
             event.collisionData.B->updateTransform(posB);
             event.collisionData.done = !event.collisionData.done;
         }
@@ -76,10 +78,10 @@ void Shape::update(const float dt)
     float invMass    = this->massData.invMass;
 
     this->velocity.x += (invMass * this->potentialAceleration.x) * dt;
-    pos.x             = pos.x + velocity.x * dt;
+    pos.x             = trunc(pos.x + velocity.x * dt);
 
     this->velocity.y += (invMass * this->potentialAceleration.y) * dt;
-    pos.y             = pos.y + velocity.y * dt;
+    pos.y             = trunc(pos.y + velocity.y * dt);
     // descomposet works faster^
 
     angularVelocity += torque * this->massData.inverseInertia * dt;
