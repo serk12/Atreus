@@ -1,8 +1,8 @@
 #include "../header/Shape.h"
 
 const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
-const float Shape::slop                      = 0.4;
-const float Shape::slopPercent               = 0.024;
+const float Shape::slop                      = 3;   // usually 0.01 to 0.1
+const float Shape::slopPercent               = 0.2; // usually 20% to 80%
 
 Shape::Shape()
 {
@@ -50,7 +50,7 @@ void Shape::event(atreus::Event& event)
 {
     if (event.type == atreus::Event::EventType::Collision) {
         if (!event.collisionData.done) {
-            sf::Vector2f correction = (std::max(event.collisionData.penetration * Shape::slop, 0.0f)
+            sf::Vector2f correction = (std::max(event.collisionData.penetration - Shape::slop, 0.0f)
                                        / (event.collisionData.A->massData.invMass + event.collisionData.B->massData.invMass))
                                       * Shape::slopPercent *event.collisionData.n;
 
