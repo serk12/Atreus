@@ -77,15 +77,12 @@ void Shape::update(const float dt)
     sf::Vector2f pos = rect.getPosition();
     float invMass    = this->massData.invMass;
 
-    this->velocity.x += (invMass * this->potentialAceleration.x) * dt;
-    pos.x             = trunc(pos.x + velocity.x * dt);
-
-    this->velocity.y += (invMass * this->potentialAceleration.y) * dt;
-    pos.y             = trunc(pos.y + velocity.y * dt);
-    // descomposet works faster^
+    this->velocity += this->potentialAceleration * dt;
+    pos.x           = trunc(pos.x + velocity.x * dt);
+    pos.y           = trunc(pos.y + velocity.y * dt);
 
     angularVelocity += torque * this->massData.inverseInertia * dt;
-    orientation     += angularVelocity * dt;
+    // orientation     += angularVelocity * dt;
     this->updateTransform(pos, orientation);
 }
 

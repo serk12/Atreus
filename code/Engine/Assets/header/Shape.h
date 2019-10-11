@@ -12,7 +12,7 @@
 
 class Shape : public Asset, public ShapeConf {
   private:
-    float gravityScale = 40000;
+    float gravityScale = 100;
     Material material  = ShapeConf::BouncyBall;
     MassData massData;
     float orientation, angularVelocity, torque;
