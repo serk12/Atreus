@@ -75,7 +75,6 @@ void Shape::update(const float dt)
 
     ShapeRect rect   = this->getShapeRect();
     sf::Vector2f pos = rect.getPosition();
-    float invMass    = this->massData.invMass;
 
     this->velocity += this->potentialAceleration * dt;
     pos.x           = trunc(pos.x + velocity.x * dt);
