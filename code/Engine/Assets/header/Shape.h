@@ -8,7 +8,6 @@
 #include "ShapeRect.h"
 
 #include <random>
-#include <iostream>
 
 class Shape : public Asset, public ShapeConf {
   private:
@@ -49,7 +48,7 @@ class Shape : public Asset, public ShapeConf {
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);
-    static void resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact);
+    static void resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact, std::vector<sf::Vector2f>& v);
     static const sf::Vector2f calculateNormal(const Shape& A, const Shape& B, float& penetration);
 };
 

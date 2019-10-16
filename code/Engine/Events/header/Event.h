@@ -19,6 +19,8 @@ class Event {
         sf::Vector2f contact;
         float        penetration;
         bool         done;
+        sf::Vector2f vA;
+        sf::Vector2f vB;
     };
 
     enum EventType

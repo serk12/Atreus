@@ -1,7 +1,7 @@
 #include "../header/Shape.h"
 
 const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
-const float Shape::slop                      = 3;   // usually 0.01 to 0.1
+const float Shape::slop                      = 20;  // usually 0.01 to 0.1
 const float Shape::slopPercent               = 0.2; // usually 20% to 80%
 
 Shape::Shape()
@@ -50,19 +50,24 @@ void Shape::event(atreus::Event& event)
 {
     if (event.type == atreus::Event::EventType::Collision) {
         if (!event.collisionData.done) {
-            sf::Vector2f correction = (std::max(event.collisionData.penetration - Shape::slop, 0.0f)
-                                       / (event.collisionData.A->massData.invMass + event.collisionData.B->massData.invMass))
-                                      * Shape::slopPercent *event.collisionData.n;
+            if (event.collisionData.penetration - Shape::slop > 0.0f) {
+                event.collisionData.A->velocity += event.collisionData.vA;
+                event.collisionData.B->velocity += event.collisionData.vB;
 
-            sf::Vector2f posA = event.collisionData.A->getShapeRect().getPosition();
-            posA  -= event.collisionData.A->massData.invMass * correction;
-            posA.x = trunc(posA.x); posA.y = trunc(posA.y);
-            event.collisionData.A->updateTransform(posA);
+                sf::Vector2f correction = (event.collisionData.penetration - Shape::slop
+                                           / (event.collisionData.A->massData.invMass + event.collisionData.B->massData.invMass))
+                                          * Shape::slopPercent *event.collisionData.n;
 
-            sf::Vector2f posB = event.collisionData.B->getShapeRect().getPosition();
-            posB  += event.collisionData.B->massData.invMass * correction;
-            posB.x = trunc(posB.x); posB.y = trunc(posB.y);
-            event.collisionData.B->updateTransform(posB);
+                sf::Vector2f posA = event.collisionData.A->getShapeRect().getPosition();
+                posA  -= event.collisionData.A->massData.invMass * correction;
+                posA.x = trunc(posA.x); posA.y = trunc(posA.y);
+                event.collisionData.A->updateTransform(posA);
+
+                sf::Vector2f posB = event.collisionData.B->getShapeRect().getPosition();
+                posB  += event.collisionData.B->massData.invMass * correction;
+                posB.x = trunc(posB.x); posB.y = trunc(posB.y);
+                event.collisionData.B->updateTransform(posB);
+            }
             event.collisionData.done = !event.collisionData.done;
         }
     }
@@ -197,7 +202,7 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float&
 
 // http://www.yaldex.com/games-programming/0672323699_ch13lev1sec6.html
 // first aproux. best explenation ^
-void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact)
+void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact, std::vector<sf::Vector2f>& v)
 {
     /* COLISION IMPULSE */
     // Calculate relative velocity
@@ -219,11 +224,11 @@ void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f co
     // Apply impulse
     sf::Vector2f impulse = j * n;
 
-    A.velocity -= A.massData.invMass * impulse;
+    v[0] = -A.massData.invMass * impulse;
     sf::Vector2f Acontact = contact - A.getShapeRect().getPosition();
     A.angularVelocity -= A.massData.inverseInertia * (Acontact.x * (-impulse.y) - Acontact.x * (-impulse.x));
 
-    B.velocity += B.massData.invMass * impulse;
+    v[1] = B.massData.invMass * impulse;
     sf::Vector2f Bcontact = contact - B.getShapeRect().getPosition();
     B.angularVelocity += B.massData.inverseInertia * (Bcontact.x * (-impulse.y) - Bcontact.x * (-impulse.x));
 
