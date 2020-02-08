@@ -1,7 +1,7 @@
 #include "../header/Shape.h"
 
 const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
-const float Shape::slop                      = 20;  // usually 0.01 to 0.1
+const float Shape::slop                      = 1.5; // usually 0.01 to 0.1
 const float Shape::slopPercent               = 0.2; // usually 20% to 80%
 
 Shape::Shape()
@@ -50,25 +50,10 @@ void Shape::event(atreus::Event& event)
 {
     if (event.type == atreus::Event::EventType::Collision) {
         if (!event.collisionData.done) {
-            if (event.collisionData.penetration - Shape::slop > 0.0f) {
-                event.collisionData.A->velocity += event.collisionData.vA;
-                event.collisionData.B->velocity += event.collisionData.vB;
+            Shape::positionCorrection(event.collisionData);
+            Shape::resolveCollision(*event.collisionData.A, *event.collisionData.B, event.collisionData.n, event.collisionData.contact);
 
-                sf::Vector2f correction = (event.collisionData.penetration - Shape::slop
-                                           / (event.collisionData.A->massData.invMass + event.collisionData.B->massData.invMass))
-                                          * Shape::slopPercent *event.collisionData.n;
-
-                sf::Vector2f posA = event.collisionData.A->getShapeRect().getPosition();
-                posA  -= event.collisionData.A->massData.invMass * correction;
-                posA.x = trunc(posA.x); posA.y = trunc(posA.y);
-                event.collisionData.A->updateTransform(posA);
-
-                sf::Vector2f posB = event.collisionData.B->getShapeRect().getPosition();
-                posB  += event.collisionData.B->massData.invMass * correction;
-                posB.x = trunc(posB.x); posB.y = trunc(posB.y);
-                event.collisionData.B->updateTransform(posB);
-            }
-            event.collisionData.done = !event.collisionData.done;
+            event.collisionData.done = false;
         }
     }
 }
@@ -160,31 +145,34 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float&
     sf::Vector2f n(0, 0);
     penetration = -1;
     if (A.getType() == B.getType()) {
-        ShapeRect aRect = A.getShapeRect();
-        ShapeRect bRect = B.getShapeRect();
+        ShapeRect aRect   = A.getShapeRect();
+        ShapeRect bRect   = B.getShapeRect();
+        sf::Vector2f dist = bRect.getCenterPosition() - aRect.getCenterPosition();
         n = bRect.getCenterPosition() - aRect.getCenterPosition();
+        float size = sqrt(n.x * n.x + n.y * n.y);
         if (A.getType() == Type::Circle) {
             // Calculate normal vec, vec that cross the two centers.
-            float size = sqrt(n.x * n.x + n.y * n.y);
-            n.x = n.x / size;
-            n.y = n.y / size;
+            penetration = aRect.getRadius() + bRect.getRadius() - size;
+            n.x         = n.x / size;
+            n.y         = n.y / size;
         }
         else if (A.getType() == Type::Rectangle) {
             sf::Vector2f direction = A.velocity + B.velocity;
             if (direction.x > direction.y) {
                 n = ((direction.x > 0) ? sf::Vector2f(1, 0) : sf::Vector2f(-1, 0));
+                float a = (aRect.getMax().x - aRect.getMin().x) / 2.0f;
+                float b = (bRect.getMax().x - bRect.getMin().x) / 2.0f;
+
+                penetration = a + b - std::abs(dist.x);
             }
             else {
                 n = ((direction.y > 0) ? sf::Vector2f(0, 1) : sf::Vector2f(0, -1));
+                float a = (aRect.getMax().y - aRect.getMin().y) / 2.0f;
+                float b = (bRect.getMax().y - bRect.getMin().y) / 2.0f;
+
+                penetration = a + b - std::abs(dist.y);
             }
         }
-        float aExtendedY = (aRect.getPosition().y - aRect.getPosPlusSize().y) / 2;
-        float bExtendedY = (bRect.getPosition().y - bRect.getPosPlusSize().y) / 2;
-        float yOverlap   = aExtendedY + bExtendedY - std::abs(n.y);
-        float aExtendedX = (aRect.getPosition().x - aRect.getPosPlusSize().x) / 2;
-        float bExtendedX = (bRect.getPosition().x - bRect.getPosPlusSize().x) / 2;
-        float xOverlap   = aExtendedX + bExtendedX - std::abs(n.x);
-        penetration = std::max(xOverlap, yOverlap);
     }
     else {
         if (((A.getType() == Type::Circle)    && (B.getType() == Type::Rectangle)) ||
@@ -202,9 +190,29 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float&
     return n;
 }
 
+// To Do: optimize gravity to disable on collision resolve
+// https://gamedev.stackexchange.com/questions/105296/calculation-correct-position-of-object-after-collision-2d
+void Shape::positionCorrection(atreus::Event::CollisionEvent& collisionData)
+{
+    sf::Vector2f correction = (std::max(collisionData.penetration - Shape::slop, 0.0f)
+                               / (collisionData.A->massData.invMass + collisionData.B->massData.invMass))
+                              * Shape::slopPercent *collisionData.n;
+
+
+    sf::Vector2f posA = collisionData.A->getShapeRect().getPosition();
+    posA  -= collisionData.A->massData.invMass * correction;
+    posA.x = trunc(posA.x); posA.y = trunc(posA.y);
+    collisionData.A->updateTransform(posA);
+
+    sf::Vector2f posB = collisionData.B->getShapeRect().getPosition();
+    posB  += collisionData.B->massData.invMass * correction;
+    posB.x = trunc(posB.x); posB.y = trunc(posB.y);
+    collisionData.B->updateTransform(posB);
+}
+
 // http://www.cs.uu.nl/docs/vakken/mgp/2014-2015/Lecture%207%20-%20Collision%20Resolution.pdf
 // first aproux. best explenation ^
-void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact, std::vector<sf::Vector2f>& v)
+void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact)
 {
     float e              = std::min(A.material.restitution, B.material.restitution);
     sf::Vector2f rv      = B.velocity - A.velocity;

@@ -16,10 +16,6 @@ Screen::~Screen()
 void Screen::event(atreus::Event& event)
 {
     if (event.type == atreus::Event::EventType::Collision) {
-        std::vector<sf::Vector2f> v(2);
-        Shape::resolveCollision(*event.collisionData.A, *event.collisionData.B, event.collisionData.n, event.collisionData.contact, v);
-        event.collisionData.vA = v[0];
-        event.collisionData.vB = v[1];
         event.collisionData.A->event(event);
     }
 

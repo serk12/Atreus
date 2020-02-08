@@ -26,6 +26,7 @@ class Shape : public Asset, public ShapeConf {
     // Pre: A or B has to be a circle
     // Post: Circle - Shape
     static sf::Vector2f minDistanceSquareCircle(const Shape& A, const Shape& B);
+    static void positionCorrection(atreus::Event::CollisionEvent& collisionData);
 
   protected:
     void setMaterial(const Material& shapeConf);
@@ -50,7 +51,7 @@ class Shape : public Asset, public ShapeConf {
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);
-    static void resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact, std::vector<sf::Vector2f>& v);
+    static void resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact);
     static const sf::Vector2f calculateNormal(const Shape& A, const Shape& B, float& penetration);
 };
 
