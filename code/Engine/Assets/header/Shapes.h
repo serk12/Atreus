@@ -12,7 +12,6 @@ class Circle : public Shape {
     sf::CircleShape circleShape;
     float area;
     float deep = 1;
-
   public:
     Shape::Type getType() const final {
         return Shape::Type::Circle;
@@ -25,6 +24,7 @@ class Circle : public Shape {
     void updateTransform(const sf::Vector2f& pos, const float rotation) final;
     float getVolume() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
+    const std::vector<sf::Vector2f> getNorm() const final;
 };
 
 #endif // CIRCLE_HH
@@ -45,7 +45,6 @@ class Rectangle : public Shape {
     sf::RectangleShape rectangleShape;
     float area;
     float deep =  1;
-
   public:
     Shape::Type getType() const final {
         return Shape::Type::Rectangle;
@@ -58,6 +57,7 @@ class Rectangle : public Shape {
     void updateTransform(const sf::Vector2f& pos, const float rotation) final;
     float getVolume() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
+    const std::vector<sf::Vector2f> getNorm() const final;
 };
 #endif // RECTANGLE_HH
 
@@ -88,6 +88,7 @@ class Polygon : public Shape {
     void updateTransform(const sf::Vector2f& pos, const float rotation) final;
     float getVolume() const final;
     void draw(sf::RenderTarget& target, sf::RenderStates states) const final;
+    const std::vector<sf::Vector2f> getNorm() const final;
 };
 
 #endif // ifndef POLYGON_HH

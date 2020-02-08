@@ -4,11 +4,10 @@
 #include <SFML/Graphics.hpp>
 
 class ShapeRect {
-private:
+  private:
     sf::Vector2f pos;
     sf::Vector2f size;
-
-public:
+  public:
     ShapeRect(const sf::Vector2f& pos, const sf::Vector2f& size);
     ShapeRect(const sf::FloatRect& rect);
 

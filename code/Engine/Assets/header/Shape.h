@@ -44,7 +44,9 @@ class Shape : public Asset, public ShapeConf {
     virtual float getVolume() const                               = 0;
     virtual void updateTransform(const sf::Vector2f&, const float = NAN) = 0;
     virtual const ShapeRect getShapeRect() const                  = 0;
-    virtual Shape::Type getType() const                           = 0;
+    // Return the normals in localSpace
+    virtual const std::vector<sf::Vector2f> getNorm() const = 0;
+    virtual Shape::Type getType() const = 0;
 
     static bool broadDetection(const Shape& A, const Shape& B);
     static bool narrowDetection(const Shape& A, const Shape& B);

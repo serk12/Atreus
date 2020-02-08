@@ -19,6 +19,24 @@ float getDistance(const sf::Vector2f& A, const sf::Vector2f& B)
     return sqrt(x * x + y * y);
 }
 
+inline std::vector<sf::Vector2f> calcNorm(const sf::Shape& shape) {
+    int points = shape.getPointCount();
+    std::vector<sf::Vector2f> norm(points);
+    sf::Vector2f pointA = shape.getPoint(points - 1) + shape.getPosition();
+    pointA.x *= shape.getScale().x;
+    pointA.y *= shape.getScale().y;
+    for (int i = 0; i < points; ++i) {
+        // ToDo: rotation
+        sf::Vector2f pointB = (shape.getPoint(i) + shape.getPosition());
+        pointB.x *= shape.getScale().x;
+        pointB.y *= shape.getScale().y;
+        sf::Vector2f lineI = pointA - pointB;
+        pointA = pointB;
+        sf::Vector2f normalI = sf::Vector2f(lineI.y, -1 * lineI.x);
+        norm[i] = normalI;
+    }
+    return norm;
+}
 
 /*--------------------------------------------------*/
 /*                      Circle                      */
@@ -65,6 +83,13 @@ float Circle::getVolume() const
     return area * deep;
 }
 
+
+const std::vector<sf::Vector2f> Circle::getNorm() const
+{
+    std::vector<sf::Vector2f> none(0);
+    return none;
+}
+
 /*--------------------------------------------------*/
 /*                  Rectangle                       */
 /*--------------------------------------------------*/
@@ -109,6 +134,11 @@ void Rectangle::updateTransform(const sf::Vector2f& pos, const float rotation)
 float Rectangle::getVolume() const
 {
     return area * deep;
+}
+
+const std::vector<sf::Vector2f> Rectangle::getNorm() const
+{
+    return calcNorm(rectangleShape);
 }
 
 
@@ -165,4 +195,9 @@ void Polygon::updateTransform(const sf::Vector2f& pos, const float rotation)
 float Polygon::getVolume() const
 {
     return area * deep;
+}
+
+const std::vector<sf::Vector2f> Polygon::getNorm() const
+{
+    return calcNorm(convexShape);
 }

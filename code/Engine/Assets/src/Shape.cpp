@@ -127,8 +127,10 @@ bool Shape::broadDetection(const Shape& A, const Shape& B)
 
 bool Shape::narrowDetection(const Shape& A, const Shape& B)
 {
+    // circle vs circle is True, because is the same as broadDetection
     if ((A.getType() == B.getType()) && (A.getType() == Type::Circle)) return true;
 
+    // SAT:https://gamedevelopment.tutsplus.com/es/tutorials/collision-detection-using-the-separating-axis-theorem--gamedev-169
     if ((A.getType() == B.getType()) && (A.getType() == Type::Rectangle)) {
         ShapeRect aRect = A.getShapeRect();
         ShapeRect bRect = B.getShapeRect();
@@ -200,57 +202,73 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float&
     return n;
 }
 
-// http://www.yaldex.com/games-programming/0672323699_ch13lev1sec6.html
+// http://www.cs.uu.nl/docs/vakken/mgp/2014-2015/Lecture%207%20-%20Collision%20Resolution.pdf
 // first aproux. best explenation ^
 void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact, std::vector<sf::Vector2f>& v)
 {
-    /* COLISION IMPULSE */
-    // Calculate relative velocity
-    sf::Vector2f rv = B.velocity - A.velocity;
-    // Calculate relative velocity in terms of the normal direction
+    float e              = std::min(A.material.restitution, B.material.restitution);
+    sf::Vector2f rv      = B.velocity - A.velocity;
     float velAlongNormal = rv.x * n.x + rv.y * n.y;
-
-    // Do not resolve if velocities are separating
     if (velAlongNormal > 0) return;
 
-    // Calculate restitution
-    float e = (A.material.restitution < B.material.restitution) ?
-              A.material.restitution : B.material.restitution;
+    float j = (-(1 + e) * velAlongNormal) / (A.massData.invMass + B.massData.invMass);
 
-    // Calculate impulse scalar
-    float j = -(1 + e) * velAlongNormal;
-    j /= A.massData.invMass + B.massData.invMass;
+    A.velocity -= j * A.massData.invMass * n;
+    B.velocity += j * B.massData.invMass * n;
+    /*
+       // COLISION IMPULSE //
+       // Calculate relative velocity
+       sf::Vector2f rv = B.velocity - A.velocity;
+       // Calculate relative velocity in terms of the normal direction
+       float velAlongNormal = rv.x * n.x + rv.y * n.y;
 
-    // Apply impulse
-    sf::Vector2f impulse = j * n;
+       // Do not resolve if velocities are separating
+       if (velAlongNormal > 0) return;
 
-    v[0] = -A.massData.invMass * impulse;
-    sf::Vector2f Acontact = contact - A.getShapeRect().getPosition();
-    A.angularVelocity -= A.massData.inverseInertia * (Acontact.x * (-impulse.y) - Acontact.x * (-impulse.x));
+       // Calculate restitution
+       float e = (A.material.restitution < B.material.restitution) ?
+          A.material.restitution : B.material.restitution;
 
-    v[1] = B.massData.invMass * impulse;
-    sf::Vector2f Bcontact = contact - B.getShapeRect().getPosition();
-    B.angularVelocity += B.massData.inverseInertia * (Bcontact.x * (-impulse.y) - Bcontact.x * (-impulse.x));
+       // Calculate impulse scalar
+       float j = -(1 + e) * velAlongNormal;
+       j /= A.massData.invMass + B.massData.invMass;
 
-    /* FRICTION */
-    rv = B.velocity - A.velocity;
-    sf::Vector2f t = rv - (rv.x * n.x + rv.y * n.y) * n;
-    float aux      =  sqrt(t.x * t.x + t.y * t.y);
-    if (aux != 0) {
-        t.x = t.x / aux; t.y = t.y / aux;
-    }
+       // Apply impulse
+       sf::Vector2f impulse = j * n;
 
-    float jt = -(rv.x * t.x + rv.y * t.y);
-    jt /= (A.massData.invMass + B.massData.invMass);
-    float mu = sqrt(A.material.staticFriction * A.material.staticFriction + B.material.staticFriction * B.material.staticFriction);
+       v[0] = -A.massData.invMass * impulse;
+       sf::Vector2f Acontact = contact - A.getShapeRect().getPosition();
+       A.angularVelocity -= A.massData.inverseInertia * (Acontact.x *
+       (-impulse.y) - Acontact.x * (-impulse.x));
 
-    sf::Vector2f frictionImpulse;
-    if (abs(jt) < j * mu) frictionImpulse = jt * t;
-    else {
-        float dynamicFriction = sqrt(A.material.dynamicFriction * A.material.dynamicFriction + B.material.dynamicFriction * B.material.dynamicFriction);
-        frictionImpulse = -j * t * dynamicFriction;
-    }
+       v[1] = B.massData.invMass * impulse;
+       sf::Vector2f Bcontact = contact - B.getShapeRect().getPosition();
+       B.angularVelocity += B.massData.inverseInertia * (Bcontact.x *
+       (-impulse.y) - Bcontact.x * (-impulse.x));
 
-    A.velocity -= A.massData.invMass * frictionImpulse;
-    B.velocity += B.massData.invMass * frictionImpulse;
+       // FRICTION //
+       rv = B.velocity - A.velocity;
+       sf::Vector2f t = rv - (rv.x * n.x + rv.y * n.y) * n;
+       float aux      =  sqrt(t.x * t.x + t.y * t.y);
+       if (aux != 0) {
+       t.x = t.x / aux; t.y = t.y / aux;
+       }
+
+       float jt = -(rv.x * t.x + rv.y * t.y);
+       jt /= (A.massData.invMass + B.massData.invMass);
+       float mu = sqrt(A.material.staticFriction * A.material.staticFriction +
+       B.material.staticFriction * B.material.staticFriction);
+
+       sf::Vector2f frictionImpulse;
+       if (abs(jt) < j * mu) frictionImpulse = jt * t;
+       else {
+       float dynamicFriction = sqrt(A.material.dynamicFriction *
+       A.material.dynamicFriction + B.material.dynamicFriction *
+       B.material.dynamicFriction);
+       frictionImpulse = -j * t * dynamicFriction;
+       }
+
+       A.velocity -= A.massData.invMass * frictionImpulse;
+       B.velocity += B.massData.invMass * frictionImpulse;
+     */
 }
