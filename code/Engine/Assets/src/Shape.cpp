@@ -1,8 +1,8 @@
 #include "../header/Shape.h"
 
 const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
-const float Shape::slop                      = 1.5; // usually 0.01 to 0.1
-const float Shape::slopPercent               = 0.2; // usually 20% to 80%
+const float Shape::slop                      = 0.1; // usually 0.01 to 0.1
+const float Shape::slopPercent               = 0.4; // usually 20% to 80%
 
 Shape::Shape()
 {
@@ -67,8 +67,8 @@ void Shape::update(const float dt)
     sf::Vector2f pos = rect.getPosition();
 
     this->velocity += this->potentialAceleration * dt;
-    pos.x           = trunc(pos.x + velocity.x * dt);
-    pos.y           = trunc(pos.y + velocity.y * dt);
+    pos.x           = pos.x + velocity.x * dt;
+    pos.y           = pos.y + velocity.y * dt;
 
     angularVelocity += torque * this->massData.inverseInertia * dt;
     // orientation     += angularVelocity * dt;
@@ -200,13 +200,11 @@ void Shape::positionCorrection(atreus::Event::CollisionEvent& collisionData)
 
 
     sf::Vector2f posA = collisionData.A->getShapeRect().getPosition();
-    posA  -= collisionData.A->massData.invMass * correction;
-    posA.x = trunc(posA.x); posA.y = trunc(posA.y);
+    posA -= collisionData.A->massData.invMass * correction;
     collisionData.A->updateTransform(posA);
 
     sf::Vector2f posB = collisionData.B->getShapeRect().getPosition();
-    posB  += collisionData.B->massData.invMass * correction;
-    posB.x = trunc(posB.x); posB.y = trunc(posB.y);
+    posB += collisionData.B->massData.invMass * correction;
     collisionData.B->updateTransform(posB);
 }
 
