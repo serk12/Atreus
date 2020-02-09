@@ -43,7 +43,7 @@ void Shape::setGravityScale(int scale)
     this->gravityScale = scale;
 }
 
-void Shape::event(sf::Event& event)
+void Shape::event(sf::Event&)
 {}
 
 void Shape::event(atreus::Event& event)
@@ -190,14 +190,12 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float&
     return n;
 }
 
-// To Do: optimize gravity to disable on collision resolve
 // https://gamedev.stackexchange.com/questions/105296/calculation-correct-position-of-object-after-collision-2d
 void Shape::positionCorrection(atreus::Event::CollisionEvent& collisionData)
 {
     sf::Vector2f correction = (std::max(collisionData.penetration - Shape::slop, 0.0f)
                                / (collisionData.A->massData.invMass + collisionData.B->massData.invMass))
                               * Shape::slopPercent *collisionData.n;
-
 
     sf::Vector2f posA = collisionData.A->getShapeRect().getPosition();
     posA -= collisionData.A->massData.invMass * correction;
@@ -210,71 +208,43 @@ void Shape::positionCorrection(atreus::Event::CollisionEvent& collisionData)
 
 // http://www.cs.uu.nl/docs/vakken/mgp/2014-2015/Lecture%207%20-%20Collision%20Resolution.pdf
 // first aproux. best explenation ^
-void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f contact)
+
+void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f)
 {
+    // COLISION //
     float e              = std::min(A.material.restitution, B.material.restitution);
     sf::Vector2f rv      = B.velocity - A.velocity;
     float velAlongNormal = rv.x * n.x + rv.y * n.y;
     if (velAlongNormal > 0) return;
 
     float j = (-(1 + e) * velAlongNormal) / (A.massData.invMass + B.massData.invMass);
+    if (std::isnan(j)) return;
 
     A.velocity -= j * A.massData.invMass * n;
     B.velocity += j * B.massData.invMass * n;
-    /*
-       // COLISION IMPULSE //
-       // Calculate relative velocity
-       sf::Vector2f rv = B.velocity - A.velocity;
-       // Calculate relative velocity in terms of the normal direction
-       float velAlongNormal = rv.x * n.x + rv.y * n.y;
 
-       // Do not resolve if velocities are separating
-       if (velAlongNormal > 0) return;
+    // FRICTION //
+    rv             = B.velocity - A.velocity;
+    velAlongNormal = rv.x * n.x + rv.y * n.y;
 
-       // Calculate restitution
-       float e = (A.material.restitution < B.material.restitution) ?
-          A.material.restitution : B.material.restitution;
+    j = (-(1 + e) * velAlongNormal) / (A.massData.invMass + B.massData.invMass);
+    if (std::isnan(j)) return;
 
-       // Calculate impulse scalar
-       float j = -(1 + e) * velAlongNormal;
-       j /= A.massData.invMass + B.massData.invMass;
 
-       // Apply impulse
-       sf::Vector2f impulse = j * n;
+    sf::Vector2f t = atreus::Math::tangent(n, rv);
+    float jt       = (-rv.x * t.x + rv.y * t.y) / (A.massData.invMass + B.massData.invMass);
+    if (std::isnan(jt)) return;
 
-       v[0] = -A.massData.invMass * impulse;
-       sf::Vector2f Acontact = contact - A.getShapeRect().getPosition();
-       A.angularVelocity -= A.massData.inverseInertia * (Acontact.x *
-       (-impulse.y) - Acontact.x * (-impulse.x));
-
-       v[1] = B.massData.invMass * impulse;
-       sf::Vector2f Bcontact = contact - B.getShapeRect().getPosition();
-       B.angularVelocity += B.massData.inverseInertia * (Bcontact.x *
-       (-impulse.y) - Bcontact.x * (-impulse.x));
-
-       // FRICTION //
-       rv = B.velocity - A.velocity;
-       sf::Vector2f t = rv - (rv.x * n.x + rv.y * n.y) * n;
-       float aux      =  sqrt(t.x * t.x + t.y * t.y);
-       if (aux != 0) {
-       t.x = t.x / aux; t.y = t.y / aux;
-       }
-
-       float jt = -(rv.x * t.x + rv.y * t.y);
-       jt /= (A.massData.invMass + B.massData.invMass);
-       float mu = sqrt(A.material.staticFriction * A.material.staticFriction +
-       B.material.staticFriction * B.material.staticFriction);
-
-       sf::Vector2f frictionImpulse;
-       if (abs(jt) < j * mu) frictionImpulse = jt * t;
-       else {
-       float dynamicFriction = sqrt(A.material.dynamicFriction *
-       A.material.dynamicFriction + B.material.dynamicFriction *
-       B.material.dynamicFriction);
-       frictionImpulse = -j * t * dynamicFriction;
-       }
-
-       A.velocity -= A.massData.invMass * frictionImpulse;
-       B.velocity += B.massData.invMass * frictionImpulse;
-     */
+    float mu = sqrt(A.material.staticFriction * A.material.staticFriction +
+                    B.material.staticFriction * B.material.staticFriction);
+    sf::Vector2f fI;
+    if (std::abs(jt) < std::abs(j) * mu) {
+        fI = jt * t;
+    }
+    else {
+        fI = -j * t * mu;
+    }
+    if (fI.x != 0) std::cout << fI.x << std::endl;
+    A.velocity -= A.massData.invMass * fI;
+    B.velocity += B.massData.invMass * fI;
 }

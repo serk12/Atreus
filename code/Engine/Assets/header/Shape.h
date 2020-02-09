@@ -6,7 +6,7 @@
 
 #include "../../header/EngineConf.h"
 #include "ShapeRect.h"
-
+#include "../../../math.h"
 #include <random>
 
 class Shape : public Asset, public ShapeConf {
