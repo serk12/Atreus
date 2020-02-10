@@ -244,7 +244,7 @@ void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f)
     else {
         fI = -j * t * mu;
     }
-    if (fI.x != 0) std::cout << fI.x << std::endl;
-    A.velocity -= A.massData.invMass * fI;
-    B.velocity += B.massData.invMass * fI;
+
+    A.velocity += A.massData.invMass * fI;
+    B.velocity -= B.massData.invMass * fI;
 }
