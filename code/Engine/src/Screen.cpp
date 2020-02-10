@@ -35,7 +35,16 @@ void Screen::update(const float deltatime)
 {
     for (std::list<Asset *>::iterator itAsset = assets.begin(); itAsset != assets.end(); ++itAsset) {
         Asset *asset = *itAsset;
+        // update
         asset->update(deltatime);
+        // check if delete
+        if (asset->canBeRemoved()) {
+            delete asset;
+            itAsset = assets.erase(itAsset);
+            --itAsset;
+            continue;
+        }
+        // check collision
         std::list<Asset *>::iterator itAssetCol = itAsset;
         ++itAssetCol;
         for (; itAssetCol != assets.end(); ++itAssetCol) {
@@ -54,11 +63,6 @@ void Screen::update(const float deltatime)
                 event->collisionData = data;
                 atreus::EventManager::pushEvent(event);
             }
-        }
-        if (asset->canBeRemoved()) {
-            delete asset;
-            itAsset = assets.erase(itAsset);
-            --itAsset;
         }
     }
 
