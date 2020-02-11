@@ -1,8 +1,8 @@
 #include "../header/Shape.h"
 
 const sf::Vector2f Shape::gravityAceleration = sf::Vector2f(0, 9.81);
-const float Shape::slop                      = 0.1; // usually 0.01 to 0.1
-const float Shape::slopPercent               = 0.4; // usually 20% to 80%
+const float Shape::slop                      = 0.05; // usually 0.01 to 0.1
+const float Shape::slopPercent               = 0.8;  // usually 20% to 80%
 
 Shape::Shape()
 {
@@ -145,9 +145,8 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float&
     sf::Vector2f n(0, 0);
     penetration = -1;
     if (A.getType() == B.getType()) {
-        ShapeRect aRect   = A.getShapeRect();
-        ShapeRect bRect   = B.getShapeRect();
-        sf::Vector2f dist = bRect.getCenterPosition() - aRect.getCenterPosition();
+        ShapeRect aRect = A.getShapeRect();
+        ShapeRect bRect = B.getShapeRect();
         n = bRect.getCenterPosition() - aRect.getCenterPosition();
         float size = sqrt(n.x * n.x + n.y * n.y);
         if (A.getType() == Type::Circle) {
@@ -157,20 +156,21 @@ const sf::Vector2f Shape::calculateNormal(const Shape& A, const Shape& B, float&
             n.y         = n.y / size;
         }
         else if (A.getType() == Type::Rectangle) {
-            sf::Vector2f direction = A.velocity + B.velocity;
-            if (direction.x > direction.y) {
-                n = ((direction.x > 0) ? sf::Vector2f(1, 0) : sf::Vector2f(-1, 0));
-                float a = (aRect.getMax().x - aRect.getMin().x) / 2.0f;
-                float b = (bRect.getMax().x - bRect.getMin().x) / 2.0f;
+            float a             = (aRect.getMax().x - aRect.getMin().x) / 2.0f;
+            float b             = (bRect.getMax().x - bRect.getMin().x) / 2.0f;
+            float penetration_x = -a - b +  std::abs(n.x);
 
-                penetration = a + b - std::abs(dist.x);
+            a = (aRect.getMax().y - aRect.getMin().y) / 2.0f;
+            b = (bRect.getMax().y - bRect.getMin().y) / 2.0f;
+
+            float penetration_y = -a - b + std::abs(n.y);
+            if (penetration_x > penetration_y) {
+                n           = (n.x < 0) ? sf::Vector2f(-1, 0) : sf::Vector2f(1, 0);
+                penetration = penetration_x;
             }
             else {
-                n = ((direction.y > 0) ? sf::Vector2f(0, 1) : sf::Vector2f(0, -1));
-                float a = (aRect.getMax().y - aRect.getMin().y) / 2.0f;
-                float b = (bRect.getMax().y - bRect.getMin().y) / 2.0f;
-
-                penetration = a + b - std::abs(dist.y);
+                n           = (n.y < 0) ? sf::Vector2f(0, -1) : sf::Vector2f(0, 1);
+                penetration = penetration_y;
             }
         }
     }
