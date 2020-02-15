@@ -1,13 +1,16 @@
 #ifndef SHAPE_HH
 #define SHAPE_HH
 
+#include <random>
+
 #include "Asset.h"
 #include "ShapeConf.h"
 
 #include "../../header/EngineConf.h"
 #include "ShapeRect.h"
-#include "../../../math.h"
-#include <random>
+
+#include "../../../Math.h"
+#include "../../../Debug.h"
 
 class Shape : public Asset, public ShapeConf {
   private:

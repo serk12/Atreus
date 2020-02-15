@@ -1,4 +1,4 @@
-#include "./math.h"
+#include "./Math.h"
 
 namespace atreus::Math {
 sf::Vector3f cross(const sf::Vector3f& A, const sf::Vector3f& B)
@@ -15,5 +15,15 @@ sf::Vector2f tangent(const sf::Vector2f& n, const sf::Vector2f& rv)
     float size = sqrt(t.x * t.x + t.y * t.y);
     if (size > 0.0f) return t / size;
     else return t;
+}
+
+float degreeToRad(float degree)
+{
+    return degree * PI / 180.0f;
+}
+
+float radToDegree(float rad)
+{
+    return rad * 180.0f / PI;
 }
 }

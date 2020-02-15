@@ -56,7 +56,7 @@ Circle::Circle(const float r, const sf::Vector2f& pos)
     circleShape.setPosition(pos);
     circleShape.setFillColor(sf::Color::Red);
 
-    area = PI * circleShape.getRadius() * circleShape.getRadius();
+    area = atreus::Math::PI *circleShape.getRadius() * circleShape.getRadius();
 
     this->calcMass(circleShape.getRadius() * circleShape.getRadius());
 }
@@ -83,7 +83,6 @@ float Circle::getVolume() const
     return area * deep;
 }
 
-
 const std::vector<sf::Vector2f> Circle::getNorm() const
 {
     std::vector<sf::Vector2f> none(0);
@@ -106,48 +105,41 @@ Rectangle::Rectangle(int i) : Rectangle(sf::Vector2f(400, 20), sf::Vector2f(50, 
 
 Rectangle::Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos)
 {
-    rectangleShape = sf::RectangleShape(size);
-    rectangleShape.setPosition(pos);
-    rectangleShape.setFillColor(sf::Color::White);
+    convexShape.setPointCount(4);
+    convexShape.setPoint(0, sf::Vector2f(0, 0));
+    convexShape.setPoint(1, sf::Vector2f(0, size.y));
+    convexShape.setPoint(2, sf::Vector2f(size.x, size.y));
+    convexShape.setPoint(3, sf::Vector2f(size.x, 0));
+    convexShape.setPosition(pos);
+    convexShape.setFillColor(sf::Color::White);
 
-    area = rectangleShape.getSize().x * rectangleShape.getSize().y;
+    area = size.x * size.y;
 
     this->calcMass(area);
 }
 
-void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-    target.draw(rectangleShape, states);
-}
-
-const ShapeRect Rectangle::getShapeRect() const
-{
-    return ShapeRect(rectangleShape.getPosition(), rectangleShape.getSize());
-}
-
-void Rectangle::updateTransform(const sf::Vector2f& pos, const float rotation)
-{
-    rectangleShape.setPosition(pos);
-    if (!std::isnan(rotation)) rectangleShape.setRotation(rotation);
-}
-
-float Rectangle::getVolume() const
-{
-    return area * deep;
-}
-
-const std::vector<sf::Vector2f> Rectangle::getNorm() const
-{
-    return calcNorm(rectangleShape);
-}
-
-
 /*--------------------------------------------------*/
 /*                  Polygon                         */
 /*--------------------------------------------------*/
-Polygon::Polygon() : Polygon({
-    sf::Vector2f(0, 0),    sf::Vector2f(0, 30),    sf::Vector2f(30, 60),    sf::Vector2f(60, 30), sf::Vector2f(0, 30)
-}, randomPosition())
+
+std::vector<sf::Vector2f> randomConvexPolygon()
+{
+    std::vector<sf::Vector2f> result;
+    int r                = 40 + std::rand() % 60;
+    int sizes            = std::rand() % 5;
+    const int options[5] = { 4, 5, 6, 8, 9 };
+    int alpha            = 360 / options[sizes];
+    int v                = 0;
+    for (int i = 0; i < options[sizes]; ++i) {
+        result.push_back(sf::Vector2f(r + cos(atreus::Math::degreeToRad(v)) * r,
+                                      r + sin(atreus::Math::degreeToRad(v)) * r));
+        v = v + alpha;
+    }
+
+    return result;
+}
+
+Polygon::Polygon() : Polygon(randomConvexPolygon(), randomPosition())
 {}
 
 Polygon::Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos)
@@ -158,13 +150,13 @@ Polygon::Polygon(const std::vector<sf::Vector2f>& shape, const sf::Vector2f& pos
         convexShape.setPoint(i, shape[i]);
     }
     convexShape.setPosition(pos);
-    convexShape.setFillColor(sf::Color::White);
+    convexShape.setFillColor(sf::Color::Blue);
 
     area = 0;
     int count = convexShape.getPointCount();
     // Green's theorem
     // clockwise => negative area
-    // holes and slef-crossing => 0
+    // holes and self-crossing => 0
     for (int i = 0; i < count; ++i) {
         int j = (i + 1) % count;
         area += convexShape.getPoint(i).x * convexShape.getPoint(j).y;

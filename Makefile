@@ -33,7 +33,7 @@ $(FOLDERS):
 src = $$(shell find  ./code/ -name  $$(notdir $$(basename $$@)).cpp)
 header = $$(shell find  ./code/ -name  $$(notdir $$(basename $$@)).h)
 %.o: $(src) $(header)
-	$(CXX) $(CXXFLAGS) -g -c $< -o $@ $(LINKS)
+	@$(CXX) $(CXXFLAGS) -g -c $< -o $@ $(LINKS)
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(BUILD_DIR)/$(TARGET) $^ $(LINKS)
+	@$(CXX) $(CXXFLAGS) -o $(BUILD_DIR)/$(TARGET) $^ $(LINKS)

@@ -1,4 +1,4 @@
-#include "./debug.h"
+#include "./Debug.h"
 
 namespace atreus::Debug {
 void print(const sf::Vector2f& v) {
