@@ -5,9 +5,7 @@ const float Shape::slop                      = 0.05; // usually 0.01 to 0.1
 const float Shape::slopPercent               = 0.8;  // usually 20% to 80%
 
 Shape::Shape()
-{
-    orientation = angularVelocity = torque = 0;
-}
+{}
 
 bool Shape::canBeRemoved() const
 {
@@ -60,15 +58,14 @@ void Shape::event(atreus::Event& event)
 
 void Shape::update(const float dt)
 {
-    this->potentialAceleration = this->externalAceleration + gravityScale * Shape::gravityAceleration;
-    this->externalAceleration  = sf::Vector2f(0, 0);
+    this->velocity += (this->externalAceleration + gravityScale * Shape::gravityAceleration) * dt
+                      + this->externalVelocity;
+    this->externalAceleration = this->externalVelocity = sf::Vector2f(0, 0);
 
     ShapeRect rect   = this->getShapeRect();
     sf::Vector2f pos = rect.getPosition();
-
-    this->velocity += this->potentialAceleration * dt;
-    pos.x           = pos.x + velocity.x * dt;
-    pos.y           = pos.y + velocity.y * dt;
+    pos.x = pos.x + velocity.x * dt;
+    pos.y = pos.y + velocity.y * dt;
 
     angularVelocity += torque * this->massData.inverseInertia * dt;
     // orientation     += angularVelocity * dt;
@@ -212,27 +209,29 @@ void Shape::positionCorrection(atreus::Event::CollisionEvent& collisionData)
 void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f)
 {
     // COLISION //
-    float e              = std::min(A.material.restitution, B.material.restitution);
+    float e         = std::min(A.material.restitution, B.material.restitution);
+    float totalMass = A.massData.invMass + B.massData.invMass;
+
     sf::Vector2f rv      = B.velocity - A.velocity;
     float velAlongNormal = rv.x * n.x + rv.y * n.y;
     if (velAlongNormal > 0) return;
 
-    float j = (-(1 + e) * velAlongNormal) / (A.massData.invMass + B.massData.invMass);
+    float j = (-(1 + e) * velAlongNormal) / totalMass;
     if (std::isnan(j)) return;
 
-    A.velocity -= j * A.massData.invMass * n;
-    B.velocity += j * B.massData.invMass * n;
+    A.externalVelocity -= j * A.massData.invMass * n;
+    B.externalVelocity += j * B.massData.invMass * n;
 
     // FRICTION //
-    rv             = B.velocity - A.velocity;
+    rv             = (B.velocity - B.externalVelocity) - (A.velocity + A.externalVelocity);
     velAlongNormal = rv.x * n.x + rv.y * n.y;
 
-    j = (-(1 + e) * velAlongNormal) / (A.massData.invMass + B.massData.invMass);
+    j = (-(1 + e) * velAlongNormal) / totalMass;
     if (std::isnan(j)) return;
 
 
     sf::Vector2f t = atreus::Math::tangent(n, rv);
-    float jt       = (-rv.x * t.x + rv.y * t.y) / (A.massData.invMass + B.massData.invMass);
+    float jt       = (-rv.x * t.x + rv.y * t.y) / totalMass;
     if (std::isnan(jt)) return;
 
     float mu = sqrt(A.material.staticFriction * A.material.staticFriction +
@@ -245,6 +244,6 @@ void Shape::resolveCollision(Shape& A, Shape& B, sf::Vector2f n, sf::Vector2f)
         fI = -j * t * mu;
     }
 
-    A.velocity += A.massData.invMass * fI;
-    B.velocity -= B.massData.invMass * fI;
+    A.externalVelocity += A.massData.invMass * fI;
+    B.externalVelocity -= B.massData.invMass * fI;
 }

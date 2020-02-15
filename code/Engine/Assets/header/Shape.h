@@ -14,11 +14,12 @@ class Shape : public Asset, public ShapeConf {
     float gravityScale = 100;
     Material material  = ShapeConf::BouncyBall;
     MassData massData;
-    float orientation, angularVelocity, torque;
-    sf::Vector2f velocity = sf::Vector2f(0, 0);
+    float orientation = 0, angularVelocity = 0, torque = 0;
 
-    sf::Vector2f potentialAceleration = sf::Vector2f(0, 0);
-    sf::Vector2f externalAceleration  = sf::Vector2f(0, 0);
+    sf::Vector2f velocity            = sf::Vector2f(0, 0),
+                 externalVelocity    = sf::Vector2f(0, 0),
+                 externalAceleration = sf::Vector2f(0, 0);
+
     static const sf::Vector2f gravityAceleration;
     static const float slop;
     static const float slopPercent;
