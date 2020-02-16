@@ -125,15 +125,18 @@ Rectangle::Rectangle(const sf::Vector2f& size, const sf::Vector2f& pos)
 std::vector<sf::Vector2f> randomConvexPolygon()
 {
     std::vector<sf::Vector2f> result;
-    int r                = 40 + std::rand() % 60;
-    int sizes            = std::rand() % 5;
-    const int options[5] = { 4, 5, 6, 8, 9 };
-    int alpha            = 360 / options[sizes];
-    int v                = 0;
-    for (int i = 0; i < options[sizes]; ++i) {
-        result.push_back(sf::Vector2f(r + cos(atreus::Math::degreeToRad(v)) * r,
-                                      r + sin(atreus::Math::degreeToRad(v)) * r));
-        v = v + alpha;
+    int r = 40 + std::rand() % 60;
+    int angle = 0, top = 180;
+    for (int i = 0; i < 3; ++i) {
+        result.push_back(sf::Vector2f(r + cos(atreus::Math::degreeToRad(angle)) * r,
+                                      r + sin(atreus::Math::degreeToRad(angle)) * r));
+        int v = angle  + std::rand() % (angle + top);
+        while (v < (angle + top - 20)) {
+            result.push_back(sf::Vector2f(r + cos(atreus::Math::degreeToRad(v)) * r,
+                                          r + sin(atreus::Math::degreeToRad(v)) * r));
+            v = v + std::rand() % ((angle + top) - v);
+        }
+        if (i == 0) { angle = 180; top = 90; }
     }
 
     return result;
