@@ -137,6 +137,7 @@ std::vector<sf::Vector2f> randomConvexPolygon()
             v = v + std::rand() % ((angle + top) - v);
         }
         if (i == 0) { angle = 180; top = 90; }
+        if (i == 1) { angle = 270; top = 90; }
     }
 
     return result;
